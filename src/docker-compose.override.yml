@@ -8,7 +8,6 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: stries_2021
-      POSTGRES_DB: stries-db-local
     restart: unless-stopped
   
   sqldata:

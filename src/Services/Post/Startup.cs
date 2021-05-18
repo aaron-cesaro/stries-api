@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Post.Application.EventHandlers;
+using Post.Database.Contextes;
 using Post.Infrastructure.MessageBroker;
 using Post.Interfaces;
 using Post.Managers;
 using RabbitMQ.Client;
+using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Post
 {
     public class Startup
     {
+
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +32,8 @@ namespace Post
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Information($"Configuring {typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services");
+
             // Add routing keys based on headers for message broker
             var routingHeaders = new Dictionary<string, object>
             {
@@ -39,6 +42,7 @@ namespace Post
 
             // Service custom Extensions
             services
+                .AddCustomDbContext(Configuration)
                 .ConfigureMessageBroker(Configuration, routingHeaders)
                 .AddStriesServices()
                 .AddHostedServices();
@@ -49,16 +53,23 @@ namespace Post
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Post", Version = "v1" });
             });
+
+            Log.Information($"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services configured");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Log.Information($"Configuring {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1"));
+
+                Log.Information(
+                    $"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} is using {env.EnvironmentName} enviroment");
             }
 
             app.UseRouting();
@@ -71,6 +82,8 @@ namespace Post
             {
                 endpoints.MapControllers();
             });
+
+            Log.Information($"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} configured");
         }
     }
 
@@ -109,6 +122,22 @@ namespace Post
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
             services.AddHostedService<TemplateHandler>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<PostContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("PostContext"),
+                    npgsqlOptionsAction: npgsqlOptions =>
+                    {
+                        npgsqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), null);
+                    });
+            },
+            ServiceLifetime.Scoped);
 
             return services;
         }

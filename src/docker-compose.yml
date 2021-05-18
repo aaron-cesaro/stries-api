@@ -30,6 +30,7 @@ services:
       dockerfile: Services/Post/Dockerfile
     depends_on:
       - rabbitmq
+      - nosqldata
 
   user:
     image: ${DOCKER_REGISTRY-}user
@@ -38,3 +39,4 @@ services:
       dockerfile: Services/User/Dockerfile
     depends_on:
       - rabbitmq
+      - sqldata
