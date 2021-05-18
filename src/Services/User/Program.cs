@@ -49,7 +49,9 @@ namespace User
                 .UseSerilog((context, services, configuration) => configuration
                         .ReadFrom.Configuration(context.Configuration)
                         .ReadFrom.Services(services)
+                        .Enrich.WithMachineName()
                         .Enrich.FromLogContext()
+                        .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                         .WriteTo.Console())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

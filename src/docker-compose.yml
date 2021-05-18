@@ -6,20 +6,31 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: RabbitMQ
 
+  nosqldata:
+    image: postgres:latest
+    container_name: Postgres
+
   web.apigateway:
     image: ${DOCKER_REGISTRY-}webapigateway
     build:
       context: .
       dockerfile: ApiGateways/Web/Web.ApiGateway/Dockerfile
+    depends_on:
+      - post
+      - user
 
   post:
     image: ${DOCKER_REGISTRY-}post
     build:
       context: .
       dockerfile: Services/Post/Dockerfile
+    depends_on:
+      - rabbitmq
 
   user:
     image: ${DOCKER_REGISTRY-}user
     build:
       context: .
       dockerfile: Services/User/Dockerfile
+    depends_on:
+      - rabbitmq

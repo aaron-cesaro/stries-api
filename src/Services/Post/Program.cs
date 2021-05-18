@@ -15,6 +15,7 @@ namespace Post
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.WithProperty("ApplicationContext", AppName)
+                .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateBootstrapLogger();
@@ -49,7 +50,9 @@ namespace Post
                 .UseSerilog((context, services, configuration) => configuration
                         .ReadFrom.Configuration(context.Configuration)
                         .ReadFrom.Services(services)
+                        .Enrich.WithMachineName()
                         .Enrich.FromLogContext()
+                        .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                         .WriteTo.Console())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

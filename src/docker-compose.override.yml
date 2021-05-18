@@ -7,6 +7,15 @@ services:
       - "15672:15672"
       - "5672:5672"
 
+  nosqldata:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: stries_2021
+      POSTGRES_DB: stries-db-local
+    restart: unless-stopped
+
   web.apigateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
