@@ -2,11 +2,6 @@ version: '3.4'
 
 services:
 
-  rabbitmq:
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-
   nosqldata:
     ports:
       - "5432:5432"
@@ -15,6 +10,18 @@ services:
       POSTGRES_PASSWORD: stries_2021
       POSTGRES_DB: stries-db-local
     restart: unless-stopped
+  
+  sqldata:
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=stries_2021
+
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
 
   web.apigateway:
     environment:

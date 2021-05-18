@@ -6,6 +6,10 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: RabbitMQ
 
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: SQLServer
+
   nosqldata:
     image: postgres:latest
     container_name: Postgres
