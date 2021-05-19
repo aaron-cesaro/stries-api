@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Post.Database.Entities
 {
+    [Table("Posts", Schema = "Post")]
     public class PostEntity
     {
         [Key]

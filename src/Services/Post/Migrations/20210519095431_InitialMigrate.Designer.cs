@@ -10,7 +10,7 @@ using Post.Database.Contextes;
 namespace Post.Migrations
 {
     [DbContext(typeof(PostContext))]
-    [Migration("20210519082310_InitialMigrate")]
+    [Migration("20210519095431_InitialMigrate")]
     partial class InitialMigrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,7 @@ namespace Post.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", "Post");
                 });
 #pragma warning restore 612, 618
         }

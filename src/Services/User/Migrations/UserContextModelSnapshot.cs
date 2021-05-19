@@ -19,7 +19,7 @@ namespace User.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("User.Database.Entities.UserEntity", b =>
+            modelBuilder.Entity("User.Database.Entities.UsersInfoEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace User.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("UsersInfo", "User");
                 });
 #pragma warning restore 612, 618
         }

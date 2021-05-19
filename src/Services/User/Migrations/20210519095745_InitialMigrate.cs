@@ -7,8 +7,12 @@ namespace User.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "User");
+
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "UsersInfo",
+                schema: "User",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -20,14 +24,15 @@ namespace User.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_UsersInfo", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UsersInfo",
+                schema: "User");
         }
     }
 }

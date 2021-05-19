@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace User.Database.Entities
 {
-    public class UserEntity
+    [Table("UsersInfo", Schema="User")]
+    public class UsersInfoEntity
     {
         [Key]
         public Guid Id { get; set; }

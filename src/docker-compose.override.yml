@@ -39,6 +39,9 @@ services:
     ports:
       - "5200:80"
       - "5201:443"
+    depends_on:
+     - nosqldata
+     - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -50,6 +53,9 @@ services:
     ports:
       - "5205:80"
       - "5206:443"
+    depends_on:
+     - sqldata
+     - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

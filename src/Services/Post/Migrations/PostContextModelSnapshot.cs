@@ -33,7 +33,7 @@ namespace Post.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", "Post");
                 });
 #pragma warning restore 612, 618
         }

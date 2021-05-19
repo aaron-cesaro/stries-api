@@ -5,7 +5,7 @@ namespace User.Database.Contextes
 {
     public class UserContext : DbContext
     {
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<UsersInfoEntity> Users { get; set; }
 
         public UserContext()
         {

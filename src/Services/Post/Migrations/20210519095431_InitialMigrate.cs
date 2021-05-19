@@ -7,8 +7,12 @@ namespace Post.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Post");
+
             migrationBuilder.CreateTable(
                 name: "Posts",
+                schema: "Post",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -24,7 +28,8 @@ namespace Post.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Posts");
+                name: "Posts",
+                schema: "Post");
         }
     }
 }

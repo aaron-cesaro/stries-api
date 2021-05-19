@@ -10,7 +10,7 @@ using User.Database.Contextes;
 namespace User.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210519081744_InitialMigrate")]
+    [Migration("20210519095745_InitialMigrate")]
     partial class InitialMigrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace User.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("User.Database.Entities.UserEntity", b =>
+            modelBuilder.Entity("User.Database.Entities.UsersInfoEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,7 +44,7 @@ namespace User.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("UsersInfo", "User");
                 });
 #pragma warning restore 612, 618
         }
