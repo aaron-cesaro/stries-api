@@ -7,6 +7,10 @@ namespace Post.Database.Contextes
     {
         public DbSet<PostEntity> Posts { get; set; }
 
+        public PostContext()
+        {
+        }
+
         public PostContext(DbContextOptions<PostContext> options)
             : base(options)
         {

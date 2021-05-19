@@ -7,6 +7,10 @@ namespace User.Database.Contextes
     {
         public DbSet<UserEntity> Users { get; set; }
 
+        public UserContext()
+        {
+        }
+
         public UserContext(DbContextOptions<UserContext> options)
             : base(options)
         {
