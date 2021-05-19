@@ -19,7 +19,7 @@ namespace User.Infrastructure.Factories
 
             var optionsBuilder = new DbContextOptionsBuilder<UserContext>();
 
-            optionsBuilder.UseSqlServer(config.GetConnectionString("UserContext"), sqlServerOptionsAction: o => o.MigrationsAssembly("User"));
+            optionsBuilder.UseNpgsql(config.GetConnectionString("UserContext"), npgsqlOptionsAction: o => o.MigrationsAssembly("User"));
 
             return new UserContext(optionsBuilder.Options);
         }

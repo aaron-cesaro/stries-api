@@ -129,11 +129,11 @@ namespace User
         {
             services.AddDbContext<UserContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("UserContext"),
-                    sqlServerOptionsAction: sqlOptions =>
+                options.UseNpgsql(configuration.GetConnectionString("PostContext"),
+                    npgsqlOptionsAction: npgsqlOptions =>
                     {
-                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                        sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                        npgsqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), null);
                     });
             },
             ServiceLifetime.Scoped);

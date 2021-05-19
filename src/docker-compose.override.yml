@@ -2,20 +2,13 @@ version: '3.4'
 
 services:
 
-  nosqldata:
+  postgres:
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: stries_2021
     restart: unless-stopped
-  
-  sqldata:
-    ports:
-      - "1433:1433"
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=stries_2021
 
   rabbitmq:
     ports:
@@ -40,7 +33,7 @@ services:
       - "5200:80"
       - "5201:443"
     depends_on:
-     - nosqldata
+     - postgres
      - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -54,7 +47,7 @@ services:
       - "5205:80"
       - "5206:443"
     depends_on:
-     - sqldata
+     - postgres
      - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
