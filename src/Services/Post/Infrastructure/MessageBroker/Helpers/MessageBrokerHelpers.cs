@@ -6,8 +6,8 @@ namespace Post.Infrastructure.MessageBroker.Helpers
     {
         public static Dictionary<string, object> SetMessageRoute(string key, string value)
         {
-            return 
-                new Dictionary<string, object> 
+            return
+                new Dictionary<string, object>
                 {
                     { key, value}
                 };

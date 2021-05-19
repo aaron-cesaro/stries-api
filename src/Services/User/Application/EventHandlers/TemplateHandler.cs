@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using User.Application.EventHandlers.Events;
-using User.Infrastructure.MessageBroker;
-using User.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using User.Application.EventHandlers.Events;
+using User.Infrastructure.MessageBroker;
+using User.Interfaces;
 
 namespace User.Application.EventHandlers
 {

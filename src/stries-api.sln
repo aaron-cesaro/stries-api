@@ -13,11 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "User", "User", "{44A98023-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Post", "Post", "{2B61EC5C-9BB4-4765-8B87-D0F87FD34CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.ApiGateway", "ApiGateways\Web\Web.ApiGateway\Web.ApiGateway.csproj", "{40A0CB0B-1A68-4F8E-8701-58B6DE69E22A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.ApiGateway", "ApiGateways\Web\Web.ApiGateway\Web.ApiGateway.csproj", "{40A0CB0B-1A68-4F8E-8701-58B6DE69E22A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Post", "Services\Post\Post.csproj", "{4600C9F4-AD21-434E-8436-A5FF3A851B72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Post", "Services\Post\Post.csproj", "{4600C9F4-AD21-434E-8436-A5FF3A851B72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User", "Services\User\User.csproj", "{4B396906-99B9-4F60-A3F0-02C0246786F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User", "Services\User\User.csproj", "{4B396906-99B9-4F60-A3F0-02C0246786F3}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AB54D6AD-E962-4820-B92E-F69C61BF248D}"
 EndProject

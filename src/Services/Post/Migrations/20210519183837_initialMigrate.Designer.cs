@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Post.Database.Contextes;
+using Post.Database.Entities;
 
 namespace Post.Migrations
 {
     [DbContext(typeof(PostContext))]
-    [Migration("20210519095431_InitialMigrate")]
-    partial class InitialMigrate
+    [Migration("20210519183837_initialMigrate")]
+    partial class initialMigrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,11 +28,41 @@ namespace Post.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<PostBody>("Body")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime>("PublishedAt")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("numeric(1,1)");
+
+                    b.Property<decimal>("RatingVoters")
+                        .HasColumnType("numeric(1,1)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Summary")
+                        .HasMaxLength(280)
+                        .HasColumnType("character varying(280)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("varchar(200)");
 
                     b.HasKey("Id");
 

@@ -3,9 +3,7 @@ using Newtonsoft.Json;
 using Post.Application.EventHandlers.Events;
 using Post.Infrastructure.MessageBroker;
 using Post.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
