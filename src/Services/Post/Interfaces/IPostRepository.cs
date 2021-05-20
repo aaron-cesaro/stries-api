@@ -31,8 +31,8 @@ namespace Post.Interfaces
         /// Delete the post with provided postId
         /// </summary>
         /// <param name="postId"></param>
-        /// <returns>Void</returns>
-        Task DeletePostAsync(Guid postId);
+        /// <returns>Post author id</returns>
+        Task<Guid> DeletePostAsync(Guid postId);
 
     }
 }

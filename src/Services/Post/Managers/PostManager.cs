@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Post.Application.EventHandlers.Events;
+using Post.Application.Events;
 using Post.Application.Models;
 using Post.Database.Entities;
 using Post.Database.Models;
@@ -67,18 +68,45 @@ namespace Post.Managers
 
                 // Send async event to message broker
                 _publisher.Publish(
-                    JsonConvert.SerializeObject(postCreatedEvent), 
+                    JsonConvert.SerializeObject(postCreatedEvent),
                     MessageBrokerHelpers.SetMessageRoute("Post", "Created"));
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} encounter an error");
             }
 
-            Log.Information($"Post with Id {postId} and Author id {post.AuthorId} created successfully");
+            Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
 
             return postId;
+        }
+
+        public async Task RemovePostAsync(Guid postId)
+        {
+            Log.Information($"Deleting Post with id {postId}");
+
+            try
+            {
+                var authorId = await _postRepository.DeletePostAsync(postId);
+
+                var postDeletedEvent = new PostDeletedEvent
+                {
+                    PostId = postId,
+                    AuthorId = authorId
+                };
+
+                // Send async event to message broker
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postDeletedEvent),
+                    MessageBrokerHelpers.SetMessageRoute("Post", "Deleted"));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} encounter an error");
+            }
+
+            Log.Information($"Post with Id {postId} successfully deleted");
         }
     }
 }

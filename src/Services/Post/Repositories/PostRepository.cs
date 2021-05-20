@@ -67,11 +67,15 @@ namespace Post.Repositories
             }
         }
 
-        public async Task DeletePostAsync(Guid postId)
+        public async Task<Guid> DeletePostAsync(Guid postId)
         {
+            var authorId = Guid.Empty;
+
             try
             {
                 var postToDelete = await _postContext.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+
+                authorId = postToDelete.AuthorId;
 
                 _postContext.Posts.Remove(postToDelete);
 
@@ -81,6 +85,8 @@ namespace Post.Repositories
             {
                 Log.Error(ex, ex.Message, $"Post {postId} not deleted");
             }
+
+            return authorId;
         }
     }
 }

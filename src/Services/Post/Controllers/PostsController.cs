@@ -45,33 +45,50 @@ namespace Post.Controllers
             {
                 postId = await _postManager.CreatePostAsync(postRequest);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {postRequest.Title} cannot be created");
-                
+
                 return StatusCode(500);
             }
 
             return Ok(postId);
         }
 
-        [HttpPut("posts")]
+        [HttpPut("posts/{id},{data}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> UpdatePostAsync()
+        public async Task<IActionResult> UpdatePostAsync(Guid postId, [FromBody] PostData postData)
         {
+            if (!ModelState.IsValid || postId == Guid.Empty)
+                return BadRequest();
+
             return Ok();
         }
 
-        [HttpDelete("posts")]
+        [HttpDelete("posts/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> DeletePostAsync()
+        public async Task<IActionResult> DeletePostAsync(Guid postId)
         {
+            if (postId == Guid.Empty)
+                return BadRequest();
+
+            try
+            {
+                await _postManager.RemovePostAsync(postId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be deleted");
+
+                return StatusCode(500);
+            }
+
             return Ok();
         }
     }
