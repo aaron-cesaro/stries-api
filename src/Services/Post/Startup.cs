@@ -38,7 +38,8 @@ namespace Post
             var routingHeaders = new Dictionary<string, object>
             {
                 { "Post", "Created" },
-                { "Post", "Deleted" }
+                { "Post", "Deleted" },
+                { "Post", "Published" }
             };
 
             // Service custom Extensions

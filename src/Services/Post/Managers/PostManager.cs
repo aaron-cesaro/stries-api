@@ -82,9 +82,9 @@ namespace Post.Managers
             return postId;
         }
 
-        public async Task<bool> UpdatePostAsync(Guid postId, PostData newPostData)
+        public async Task<bool> SaveAndPusblishPostAsync(Guid postId, string status, PostData newPostData)
         {
-            Log.Information($"Updating Post with id {postId}");
+            Log.Information($"Saving Post with id {postId}");
 
             var updated = false;
 
@@ -110,14 +110,36 @@ namespace Post.Managers
 
                 postToUpdate.UpdatedAt = DateTime.UtcNow;
 
+                var postStatus = status == "published" ? PostStatus.published : PostStatus.draft;
+
+                if (postToUpdate.Status != PostStatus.published && postToUpdate.Status == postStatus)
+                {
+                    Log.Information($"Post with Id {postId} is going to be published");
+                    postToUpdate.Status = PostStatus.published;
+                }
+
                 await _postRepository.UpdatePostAsync(postToUpdate);
+
+                if (postToUpdate.Status == PostStatus.published)
+                {
+                    var postPublishedEvent = new PostPublishedEvent
+                    {
+                        PostId = postId,
+                        AuthorId = postToUpdate.AuthorId
+                    };
+
+                    // Send post published event to message broker
+                    _publisher.Publish(
+                        JsonConvert.SerializeObject(postPublishedEvent),
+                        MessageBrokerHelpers.SetMessageRoute("Post", "Published"));
+                }
             }
             catch(Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be updated");
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
             }
 
-            Log.Information($"Post with Id {postId} successfully updated");
+            Log.Information($"Post with Id {postId} successfully saved with status {status}");
 
             return updated;
         }

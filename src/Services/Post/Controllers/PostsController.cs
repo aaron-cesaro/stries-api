@@ -60,14 +60,14 @@ namespace Post.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> UpdatePostAsync(Guid postId, [FromBody] PostData newPostData)
+        public async Task<IActionResult> SaveAndPublishPostAsync(Guid postId, string status, [FromBody] PostData newPostData)
         {
-            if (!ModelState.IsValid || postId == Guid.Empty)
+            if (!ModelState.IsValid || postId == Guid.Empty || (status != "draft" && status != "published"))
                 return BadRequest();
 
             try
             {
-                await _postManager.UpdatePostAsync(postId, newPostData);
+                await _postManager.SaveAndPusblishPostAsync(postId, status, newPostData);
             }
             catch(Exception ex)
             {

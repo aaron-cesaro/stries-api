@@ -1,4 +1,5 @@
 ﻿using Post.Application.Models;
+using Post.Database.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -14,12 +15,12 @@ namespace Post.Interfaces
         Task<Guid> CreatePostAsync(CreatePostRequest postToCreate);
 
         /// <summary>
-        /// Update a non published Post with updated financial or user generated content
+        /// Update and publish (if status is "publish") a Post with financial or user generated content
         /// </summary>
         /// <param name="postId"></param>
         /// <param name="newPostData"></param>
-        /// <returns>Void</returns>
-        Task<bool> UpdatePostAsync(Guid postId, PostData newPostData);
+        /// <returns>True if the post has been saved and/or published, false otherwise</returns>
+        Task<bool> SaveAndPusblishPostAsync(Guid postId, string status, PostData newPostData);
 
         /// <summary>
         /// Permanently remove a post
