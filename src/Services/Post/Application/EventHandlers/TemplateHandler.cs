@@ -12,9 +12,9 @@ namespace Post.Application.EventHandlers
     public class TemplateHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
-        private readonly ITemplateManager _templateManager;
+        private readonly IPostManager _templateManager;
 
-        public TemplateHandler(ISubscriber subscriber, ITemplateManager templateManager)
+        public TemplateHandler(ISubscriber subscriber, IPostManager templateManager)
         {
             _subscriber = subscriber;
             _templateManager = templateManager;

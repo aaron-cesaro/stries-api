@@ -113,7 +113,7 @@ namespace Post
 
         public static IServiceCollection AddStriesServices(this IServiceCollection services)
         {
-            services.AddSingleton<ITemplateManager, TemplateManager>();
+            services.AddSingleton<IPostManager, PostManager>();
 
             return services;
         }

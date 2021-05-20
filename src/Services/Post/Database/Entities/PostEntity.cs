@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Post.Database.Entities
 {
     /// <summary>
-    /// Representation of a Post
+    /// Stries Post database representation
     /// </summary>
     [Table("Posts", Schema = "Post")]
     public class PostEntity
@@ -50,20 +50,7 @@ namespace Post.Database.Entities
     }
 
     /// <summary>
-    /// Enumerate statuses that a Post can assume:
-    ///  * draft: the post has been created but is not published yet.
-    ///  * published: the post has been published and can be viewed by other users.
-    ///  * archived: the post has been archived. This implies that the post is visible just for the author.
-    /// </summary>
-    public enum PostStatus
-    {
-        draft,
-        published,
-        archived
-    }
-
-    /// <summary>
-    /// Representation of a Post content. 
+    /// Representation of a json Post content. 
     /// The class contains all fields needed to fill up a Post with user generated contents.
     /// </summary>
     public class PostBody
