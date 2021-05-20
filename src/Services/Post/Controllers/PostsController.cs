@@ -55,20 +55,31 @@ namespace Post.Controllers
             return Ok(postId);
         }
 
-        [HttpPut("posts/{id},{data}")]
+        [HttpPut("posts/{id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> UpdatePostAsync(Guid postId, [FromBody] PostData postData)
+        public async Task<IActionResult> UpdatePostAsync(Guid postId, [FromBody] PostData newPostData)
         {
             if (!ModelState.IsValid || postId == Guid.Empty)
                 return BadRequest();
 
+            try
+            {
+                await _postManager.UpdatePostAsync(postId, newPostData);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be updated");
+
+                return StatusCode(500);
+            }
+
             return Ok();
         }
 
-        [HttpDelete("posts/{id}")]
+        [HttpDelete("posts/{id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]

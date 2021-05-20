@@ -14,6 +14,14 @@ namespace Post.Interfaces
         Task<Guid> CreatePostAsync(CreatePostRequest postToCreate);
 
         /// <summary>
+        /// Update a non published Post with updated financial or user generated content
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="newPostData"></param>
+        /// <returns>Void</returns>
+        Task<bool> UpdatePostAsync(Guid postId, PostData newPostData);
+
+        /// <summary>
         /// Permanently remove a post
         /// </summary>
         /// <param name="postId"></param>

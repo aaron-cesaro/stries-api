@@ -66,7 +66,7 @@ namespace Post.Managers
                     CreatedAt = creationDate
                 };
 
-                // Send async event to message broker
+                // Send post creation event to message broker
                 _publisher.Publish(
                     JsonConvert.SerializeObject(postCreatedEvent),
                     MessageBrokerHelpers.SetMessageRoute("Post", "Created"));
@@ -74,12 +74,52 @@ namespace Post.Managers
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} encounter an error");
+                Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
             }
 
             Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
 
             return postId;
+        }
+
+        public async Task<bool> UpdatePostAsync(Guid postId, PostData newPostData)
+        {
+            Log.Information($"Updating Post with id {postId}");
+
+            var updated = false;
+
+            try
+            {
+                var postToUpdate = await _postRepository.ReadPostAsync(postId);
+
+                if(postToUpdate == null)
+                {
+                    Log.Information($"Post with id {postId} not found");
+
+                    return updated;
+                }
+
+                postToUpdate.Body = new PostBody
+                {
+                    CompanyDescription = newPostData.CompanyDescription,
+                    CompanyThesis = newPostData.CompanyThesis,
+                    CompanyValuation = newPostData.CompanyValuation,
+                    CompanyFinancials = newPostData.CompanyFinancials,
+                    CompanyOther = newPostData.CompanyOther
+                };
+
+                postToUpdate.UpdatedAt = DateTime.UtcNow;
+
+                await _postRepository.UpdatePostAsync(postToUpdate);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be updated");
+            }
+
+            Log.Information($"Post with Id {postId} successfully updated");
+
+            return updated;
         }
 
         public async Task RemovePostAsync(Guid postId)
@@ -96,14 +136,14 @@ namespace Post.Managers
                     AuthorId = authorId
                 };
 
-                // Send async event to message broker
+                // Send post deletion event to message broker
                 _publisher.Publish(
                     JsonConvert.SerializeObject(postDeletedEvent),
                     MessageBrokerHelpers.SetMessageRoute("Post", "Deleted"));
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {postId} encounter an error");
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be deleted");
             }
 
             Log.Information($"Post with Id {postId} successfully deleted");
