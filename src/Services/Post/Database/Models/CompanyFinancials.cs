@@ -1,4 +1,6 @@
-﻿namespace Post.Database.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Post.Database.Models
 {
     /// <summary>
     /// Representation of the current and past financial status of a company.
@@ -9,8 +11,13 @@
     /// </summary>
     public class CompanyFinancials
     {
-        public IncomeStatement IncomeStatement { get; set; }
-        public BalanceSheet BalanceSheet { get; set; }
-        public CashFlow CashFlow { get; set; }
+        [Required(ErrorMessage = "Income Statement field must be provided")]
+        public IncomeStatementSection IncomeStatement { get; set; }
+
+        [Required(ErrorMessage = "Balance Sheet field must be provided")]
+        public BalanceSheetSection BalanceSheet { get; set; }
+
+        [Required(ErrorMessage = "Cash Flow field must be provided")]
+        public CashFlowSection CashFlow { get; set; }
     }
 }

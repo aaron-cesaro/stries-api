@@ -1,8 +1,8 @@
 ﻿{
   "Routes": [
     {
-      "UpstreamPathTemplate": "/api/{version}/posts/{everything}",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/{version}/posts/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
         "EnableRateLimiting": true,
@@ -12,7 +12,7 @@
       },
       "SwaggerKey": "Post",
 
-      "DownstreamPathTemplate": "/api/{version}/posts/{everything}",
+      "DownstreamPathTemplate": "/api/{version}/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/api/{version}/users/{everything}",
+      "UpstreamPathTemplate": "/{version}/users/{everything}",
       "UpstreamHttpMethod": [ "Get" ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
@@ -33,7 +33,7 @@
       },
       "SwaggerKey": "User",
 
-      "DownstreamPathTemplate": "/api/{version}/users/{everything}",
+      "DownstreamPathTemplate": "/api/{version}/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

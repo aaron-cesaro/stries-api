@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Post.Database.Models
 {
+    /// <summary>
+    /// Representation of a user generated text content
+    /// </summary>
     public class TextDescription
     {
         [Required(ErrorMessage = "Text field must be provided")]

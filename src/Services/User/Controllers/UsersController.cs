@@ -1,20 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Serilog;
+
 
 namespace User.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpGet("health-check")]
+        public UsersController()
+        {
+        }
+
+        [HttpGet("users/health-check")]
         [ProducesResponseType(200)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         public IActionResult HealthCheck()
         {
-            var message = "User Service health check: ";
-            return Ok(message + DateTime.UtcNow);
+            Log.Information("User Service Health-Check");
+
+            return Ok();
         }
     }
 }
