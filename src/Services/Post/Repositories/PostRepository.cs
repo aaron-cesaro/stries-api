@@ -21,8 +21,6 @@ namespace Post.Repositories
         {
             var postId = Guid.NewGuid();
 
-            Log.Information($"Inserting Post with id {postId}");
-
             try
             {
                 post.Id = postId;
@@ -35,16 +33,12 @@ namespace Post.Repositories
                 Log.Error(ex, ex.Message, $"Post {postId} not inserted");
             }
 
-            Log.Information($"Post {postId} successfully inserted");
-
             return postId;
         }
 
         public async Task<PostEntity> ReadPostAsync(Guid postId)
         {
             PostEntity post = null;
-
-            Log.Information($"Reading Post with id {postId}");
 
             try
             {
@@ -56,14 +50,11 @@ namespace Post.Repositories
                 Log.Error(ex, ex.Message, $"Post {postId} not readed");
             }
 
-            Log.Information($"Post {postId} read successfully");
-
             return post;
         }
 
         public async Task UpdatePostAsync(PostEntity post)
         {
-            Log.Information($"Updating Post with id {post.Id}");
             try
             {
                 _postContext.Posts.Update(post);
@@ -74,14 +65,10 @@ namespace Post.Repositories
             {
                 Log.Error(ex, ex.Message, $"Post {post.Id} not updated");
             }
-
-            Log.Information($"Post {post.Id} updated successfully");
         }
 
         public async Task DeletePostAsync(Guid postId)
         {
-            Log.Information($"Deleting Post with id {postId}");
-
             try
             {
                 var postToDelete = await _postContext.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -94,8 +81,6 @@ namespace Post.Repositories
             {
                 Log.Error(ex, ex.Message, $"Post {postId} not deleted");
             }
-
-            Log.Information($"Post {postId} deleted successfully");
         }
     }
 }

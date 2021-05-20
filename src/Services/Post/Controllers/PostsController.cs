@@ -44,7 +44,8 @@ namespace Post.Controllers
             try
             {
                 postId = await _postManager.CreatePostAsync(postRequest);
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {postRequest.Title} cannot be created");
                 

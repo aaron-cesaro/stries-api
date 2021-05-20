@@ -28,7 +28,7 @@ namespace Post.Application.EventHandlers
 
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
-            var response = JsonConvert.DeserializeObject<TemplateEvent>(message);
+            var response = JsonConvert.DeserializeObject<PostCreatedEvent>(message);
 
             /*
             if (response.IsDeletable)

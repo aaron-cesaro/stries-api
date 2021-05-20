@@ -1,6 +1,10 @@
-﻿using Post.Application.Models;
+﻿using Newtonsoft.Json;
+using Post.Application.EventHandlers.Events;
+using Post.Application.Models;
 using Post.Database.Entities;
 using Post.Database.Models;
+using Post.Infrastructure.MessageBroker;
+using Post.Infrastructure.MessageBroker.Helpers;
 using Post.Interfaces;
 using Serilog;
 using System;
@@ -11,14 +15,18 @@ namespace Post.Managers
     public class PostManager : IPostManager
     {
         private readonly IPostRepository _postRepository;
+        private readonly IPublisher _publisher;
 
-        public PostManager(IPostRepository postRepository)
+        public PostManager(IPostRepository postRepository, IPublisher publisher)
         {
             _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
 
         public async Task<Guid> CreatePostAsync(CreatePostRequest postToCreate)
         {
+            Log.Information($"Creating Post with Author id {postToCreate.AuthorId}");
+
             var creationDate = DateTime.UtcNow;
 
             var post = new PostEntity
@@ -49,13 +57,26 @@ namespace Post.Managers
 
                 postId = await _postRepository.InsertPostAsync(post);
 
-                return postId;
+                var postCreatedEvent = new PostCreatedEvent
+                {
+                    AuthorId = postToCreate.AuthorId,
+                    Title = postToCreate.Title,
+                    Url = postToCreate.Url,
+                    CreatedAt = creationDate
+                };
+
+                // Send async event to message broker
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postCreatedEvent), 
+                    MessageBrokerHelpers.SetMessageRoute("Post", "Created"));
 
             }
             catch(Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with Id {postId} not created");
+                Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} encounter an error");
             }
+
+            Log.Information($"Post with Id {postId} and Author id {post.AuthorId} created successfully");
 
             return postId;
         }

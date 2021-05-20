@@ -37,7 +37,7 @@ namespace Post
             // Add routing keys based on headers for message broker
             var routingHeaders = new Dictionary<string, object>
             {
-                { "", ""}
+                { "Post", "Created" }
             };
 
             // Service custom Extensions
