@@ -10,6 +10,7 @@ using Post.Database.Contextes;
 using Post.Infrastructure.MessageBroker;
 using Post.Interfaces;
 using Post.Managers;
+using Post.Repositories;
 using RabbitMQ.Client;
 using Serilog;
 using System;
@@ -116,6 +117,7 @@ namespace Post
         public static IServiceCollection AddStriesServices(this IServiceCollection services)
         {
             services.AddSingleton<IPostManager, PostManager>();
+            services.AddSingleton<IPostRepository, PostRepository>();
 
             return services;
         }

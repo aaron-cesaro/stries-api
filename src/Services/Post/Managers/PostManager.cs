@@ -35,7 +35,7 @@ namespace Post.Managers
                 AuthorId = postToCreate.AuthorId,
                 Title = postToCreate.Title,
                 Summary = postToCreate.Summary,
-                Url = postToCreate.Url,
+                ImageUrl = postToCreate.ImageUrl,
                 Status = PostStatus.draft,
                 Body = new PostBody
                 {
@@ -62,7 +62,7 @@ namespace Post.Managers
                 {
                     AuthorId = postToCreate.AuthorId,
                     Title = postToCreate.Title,
-                    Url = postToCreate.Url,
+                    ImageUrl = postToCreate.ImageUrl,
                     CreatedAt = creationDate
                 };
 
@@ -125,7 +125,11 @@ namespace Post.Managers
                     var postPublishedEvent = new PostPublishedEvent
                     {
                         PostId = postId,
-                        AuthorId = postToUpdate.AuthorId
+                        Title = postToUpdate.Title,
+                        Summary = postToUpdate.Summary,
+                        ImageUrl = postToUpdate.ImageUrl,
+                        AuthorId = postToUpdate.AuthorId,
+                        PublishedAt = postToUpdate.PublishedAt
                     };
 
                     // Send post published event to message broker

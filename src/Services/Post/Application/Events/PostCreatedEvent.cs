@@ -13,7 +13,7 @@ namespace Post.Application.EventHandlers.Events
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Url field must be provided")]
-        public string Url { get; set; }
+        public string ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Created at field must be provided")]
         public DateTime CreatedAt { get; set; }

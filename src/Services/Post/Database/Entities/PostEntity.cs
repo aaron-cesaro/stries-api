@@ -25,7 +25,7 @@ namespace Post.Database.Entities
         public string Summary { get; set; }
 
         [Column(TypeName = "varchar(200)")]
-        public string Url { get; set; }
+        public string ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Status field must be provided")]
         public PostStatus Status { get; set; }

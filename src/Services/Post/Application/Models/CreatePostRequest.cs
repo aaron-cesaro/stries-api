@@ -17,7 +17,7 @@ namespace Post.Application.Models
         public string Summary { get; set; }
 
         [Required(ErrorMessage = "Url field must be provided")]
-        public string Url { get; set; }
+        public string ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Post Data field must be provided")]
         public PostData PostData { get; set; }
