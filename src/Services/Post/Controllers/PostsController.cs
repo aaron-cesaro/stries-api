@@ -17,7 +17,7 @@ namespace Post.Controllers
 
         public PostsController(IPostManager postManager)
         {
-            _postManager = postManager
+            _postManager = postManager;
         }
 
         [HttpGet("health-check")]

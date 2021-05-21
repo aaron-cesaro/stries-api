@@ -42,5 +42,12 @@ namespace Post.Interfaces
         /// <param name="postId"></param>
         /// <returns>Void</returns>
         Task RemovePostAsync(Guid postId);
+
+        /// <summary>
+        /// Remove all posts created by an author
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns>Void</returns>
+        Task RemoveAllPostsByAuthorAsync(Guid authorId);
     }
 }

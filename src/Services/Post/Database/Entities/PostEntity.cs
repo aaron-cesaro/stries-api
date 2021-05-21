@@ -14,6 +14,7 @@ namespace Post.Database.Entities
         [Key]
         public Guid Id { get; set; }
 
+        [ForeignKey("Authors")]
         [Required(ErrorMessage = "Author Id field must be provided")]
         public Guid AuthorId { get; set; }
 

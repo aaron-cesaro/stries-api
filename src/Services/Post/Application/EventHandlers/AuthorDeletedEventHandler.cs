@@ -1,23 +1,26 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Post.Application.EventHandlers.Events;
+using Post.Application.Events;
 using Post.Infrastructure.MessageBroker;
 using Post.Interfaces;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Post.Application.EventHandlers
 {
-    public class TemplateHandler : IHostedService
+    public class AuthorDeletedEventHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
-        private readonly IPostManager _postManage;
+        private readonly IAuthorManager _authorManager;
 
-        public TemplateHandler(ISubscriber subscriber, IPostManager postManage)
+        public AuthorDeletedEventHandler(ISubscriber subscriber, IAuthorManager authorManager)
         {
             _subscriber = subscriber;
-            _postManage = postManage;
+            _authorManager = authorManager;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -28,15 +31,20 @@ namespace Post.Application.EventHandlers
 
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
-            var response = JsonConvert.DeserializeObject<PostCreatedEvent>(message);
+            var response = JsonConvert.DeserializeObject<AuthorDeletedEvent>(message);
 
-            /*
-            if (response.IsDeletable)
+            try
             {
-                // templateManager.//method(response.WeatherId).GetAwaiter().GetResult();
+                var deleted = _authorManager.DeleteAuthorAsync(response.Id);
+
+                return true;
             }
-            */
-            return true;
+            catch(Exception)
+            {
+                Log.Information($"Author with id {response.Id} cannot be deleted");
+            }
+
+            return false;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

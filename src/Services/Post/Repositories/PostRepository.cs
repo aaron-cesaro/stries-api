@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Post.Database.Contextes;
 using Post.Database.Entities;
+using Post.Infrastructure.Exceptions;
 using Post.Interfaces;
 using Serilog;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Post.Repositories
@@ -31,12 +33,13 @@ namespace Post.Repositories
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {postId} not inserted");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {postId}");
             }
 
             return postId;
         }
 
-        public async Task<PostEntity> ReadPostAsync(Guid postId)
+        public async Task<PostEntity> ReadPostByIdAsync(Guid postId)
         {
             PostEntity post = null;
 
@@ -48,6 +51,7 @@ namespace Post.Repositories
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {postId} not readed");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {postId}");
             }
 
             return post;
@@ -64,6 +68,7 @@ namespace Post.Repositories
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {post.Id} not updated");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {post.Id}");
             }
         }
 
@@ -84,9 +89,29 @@ namespace Post.Repositories
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post {postId} not deleted");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {postId}");
             }
 
             return authorId;
+        }
+
+        public async Task DeleteAllPostsByAuthorIdAsync(Guid authorId)
+        {
+            try
+            {
+                var postsToDelete = await _postContext.Posts
+                    .Where(p => p.AuthorId == authorId)
+                    .ToListAsync();
+
+                _postContext.RemoveRange(postsToDelete);
+
+                await _postContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"All post by author {authorId} not deleted");
+                throw new PostDbOperationNotExecutedException(ex, $"Author id {authorId}");
+            }
         }
     }
 }

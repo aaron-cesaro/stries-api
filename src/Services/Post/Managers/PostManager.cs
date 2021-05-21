@@ -79,7 +79,7 @@ namespace Post.Managers
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
-                throw new PostNotProcessedException(ex, "Post id {postId}");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
             }           
         }
 
@@ -89,7 +89,7 @@ namespace Post.Managers
 
             try
             {
-                var postToGet = await _postRepository.ReadPostAsync(postId);
+                var postToGet = await _postRepository.ReadPostByIdAsync(postId);
 
                 if (postToGet == null)
                 {
@@ -127,7 +127,7 @@ namespace Post.Managers
             catch(Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be retrieved");
-                throw new PostNotProcessedException(ex, "Post id {postId}");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
             }
         }
 
@@ -137,7 +137,7 @@ namespace Post.Managers
 
             try
             {
-                var postToSave = await _postRepository.ReadPostAsync(postId);
+                var postToSave = await _postRepository.ReadPostByIdAsync(postId);
 
                 if(postToSave == null)
                 {
@@ -163,14 +163,14 @@ namespace Post.Managers
                 postToSave.UpdatedAt = DateTime.UtcNow;
 
                 await _postRepository.UpdatePostAsync(postToSave);
+
+                Log.Information($"Post with Id {postId} successfully saved");
             }
             catch(Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
-                throw new PostNotProcessedException(ex, "Post id {postId}");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
             }
-
-            Log.Information($"Post with Id {postId} successfully saved");
         }
 
         public async Task PublishPostAsync(Guid postId)
@@ -179,7 +179,7 @@ namespace Post.Managers
 
             try
             {
-                var postToPublish = await _postRepository.ReadPostAsync(postId);
+                var postToPublish = await _postRepository.ReadPostByIdAsync(postId);
 
                 if (postToPublish == null)
                 {
@@ -193,15 +193,17 @@ namespace Post.Managers
                     throw new PostAlreadyPublishedException($"Post id {postToPublish.Id}");
                 }
 
+                // Update post status
+                postToPublish.Status = PostStatus.published;
+
                 var publishedDate = DateTime.UtcNow;
 
                 postToPublish.UpdatedAt = publishedDate;
                 postToPublish.PublishedAt = publishedDate;
 
-                // Update post status
-                postToPublish.Status = PostStatus.published;
-
                 await _postRepository.UpdatePostAsync(postToPublish);
+
+
 
                 // Create publish event for message propagation
                 var postPublishedEvent = new PostPublishedEvent
@@ -224,7 +226,7 @@ namespace Post.Managers
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
-                throw new PostNotProcessedException(ex, "Post id {postId}");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
             }
         }
 
@@ -234,7 +236,7 @@ namespace Post.Managers
 
             try
             {
-                var postToDelete = await _postRepository.ReadPostAsync(postId);
+                var postToDelete = await _postRepository.ReadPostByIdAsync(postId);
 
                 if(postToDelete == null)
                 {
@@ -255,14 +257,31 @@ namespace Post.Managers
                 _publisher.Publish(
                     JsonConvert.SerializeObject(postDeletedEvent),
                     MessageBrokerHelpers.SetMessageRoute("PostDeleted", "PostDeleted"));
+
+                Log.Information($"Post with Id {postId} successfully deleted");
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be deleted");
-                throw new PostNotProcessedException(ex, "Post id {postId}");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
             }
+        }
 
-            Log.Information($"Post with Id {postId} successfully deleted");
+        public async Task RemoveAllPostsByAuthorAsync(Guid authorId)
+        {
+            Log.Information($"Deleting all Post by Author id {authorId}");
+
+            try
+            {
+                await _postRepository.DeleteAllPostsByAuthorIdAsync(authorId);
+
+                Log.Information($"All posts by author id {authorId} successfully deleted");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"All posts by author id {authorId} cannot be deleted");
+                throw new PostNotProcessedException(ex, $"Author id {authorId}");
+            }
         }
     }
 }

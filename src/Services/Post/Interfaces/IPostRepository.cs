@@ -18,7 +18,7 @@ namespace Post.Interfaces
         /// </summary>
         /// <param name="postId"></param>
         /// <returns>Post Entity with Id equal to postId</returns>
-        Task<PostEntity> ReadPostAsync(Guid postId);
+        Task<PostEntity> ReadPostByIdAsync(Guid postId);
 
         /// <summary>
         /// Update a post content
@@ -34,5 +34,6 @@ namespace Post.Interfaces
         /// <returns>Post author id</returns>
         Task<Guid> DeletePostAsync(Guid postId);
 
+        Task DeleteAllPostsByAuthorIdAsync(Guid authorId);
     }
 }

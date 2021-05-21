@@ -93,9 +93,10 @@ namespace Post
             // Add routing keys based on headers for message broker
             var routingHeaders = new Dictionary<string, object>
             {
-                { "PostCreated", "PostCreated"},
-                { "PostPublished", "PostPublished"},
-                { "PostDeleted", "PostDeleted"}
+                { "PostCreated", "PostCreated" },
+                { "PostPublished", "PostPublished" },
+                { "PostDeleted", "PostDeleted" },
+                { "UserDeleted", "UserDeleted" }
             };
 
             // Get message broker settings from configuration
@@ -123,6 +124,8 @@ namespace Post
             // Application
             services.AddSingleton<IPostManager, PostManager>();
             services.AddSingleton<IPostRepository, PostRepository>();
+            services.AddSingleton<IAuthorManager, AuthorManager>();
+            services.AddSingleton<IAuthorRepository, AuthorRepository>();
 
             return services;
         }
@@ -130,7 +133,7 @@ namespace Post
         // Add Hosted Services for background tasks
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
-            services.AddHostedService<TemplateHandler>();
+            services.AddHostedService<AuthorDeletedEventHandler>();
 
             return services;
         }
