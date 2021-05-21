@@ -12,12 +12,12 @@ namespace Post.Application.EventHandlers
     public class TemplateHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
-        private readonly IPostManager _templateManager;
+        private readonly IPostManager _postManage;
 
-        public TemplateHandler(ISubscriber subscriber, IPostManager templateManager)
+        public TemplateHandler(ISubscriber subscriber, IPostManager postManage)
         {
             _subscriber = subscriber;
-            _templateManager = templateManager;
+            _postManage = postManage;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

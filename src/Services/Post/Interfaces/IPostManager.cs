@@ -15,12 +15,19 @@ namespace Post.Interfaces
         Task<Guid> CreatePostAsync(CreatePostRequest postToCreate);
 
         /// <summary>
-        /// Update and publish (if status is "publish") a Post with financial or user generated content
+        /// Update a Post with financial or user generated content
         /// </summary>
         /// <param name="postId"></param>
         /// <param name="newPostData"></param>
-        /// <returns>True if the post has been saved and/or published, false otherwise</returns>
-        Task<bool> SaveAndPusblishPostAsync(Guid postId, string status, PostData newPostData);
+        /// <returns>True if the post has been saved, false otherwise</returns>
+        Task SavePostAsync(Guid postId, PostData newPostData);
+
+        /// <summary>
+        /// Publish a Post with financial or user generated content
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns>True if the post has been published, false otherwise</returns>
+        Task PublishPostAsync(Guid postId);
 
         /// <summary>
         /// Permanently remove a post

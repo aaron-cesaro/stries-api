@@ -35,19 +35,11 @@ namespace Post
         {
             Log.Information($"Configuring {typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services");
 
-            // Add routing keys based on headers for message broker
-            var routingHeaders = new Dictionary<string, object>
-            {
-                { "Post", "Created" },
-                { "Post", "Deleted" },
-                { "Post", "Published" }
-            };
-
             // Service custom Extensions
             services
-                .AddCustomDbContext(Configuration)
-                .ConfigureMessageBroker(Configuration, routingHeaders)
                 .AddStriesServices()
+                .AddCustomDbContext(Configuration)
+                .ConfigureMessageBroker(Configuration)
                 .AddHostedServices();
 
             services.AddControllers();
@@ -69,7 +61,10 @@ namespace Post
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1"));
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1");
+                    c.RoutePrefix = string.Empty;
+                });
 
                 Log.Information(
                     $"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} is using {env.EnvironmentName} enviroment");
@@ -93,8 +88,16 @@ namespace Post
     static class CustomExtensionsMethods
     {
         // Message Broker configuration
-        public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration, Dictionary<string, object> routingHeaders)
+        public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration)
         {
+            // Add routing keys based on headers for message broker
+            var routingHeaders = new Dictionary<string, object>
+            {
+                { "PostCreated", "PostCreated"},
+                { "PostPublished", "PostPublished"},
+                { "PostDeleted", "PostDeleted"}
+            };
+
             // Get message broker settings from configuration
             var messageBrokerSettings = Configuration.GetSection("MessageBrokerSettings");
 
@@ -106,16 +109,18 @@ namespace Post
                     ExchangeType.Headers));
 
             services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
-                "stries_default_exchange",
-                "stries_default_queue",
-                routingHeaders,
-                ExchangeType.Headers));
+            "stries_default_exchange",
+            "stries_default_queue",
+            routingHeaders,
+            ExchangeType.Headers));
 
             return services;
         }
 
         public static IServiceCollection AddStriesServices(this IServiceCollection services)
         {
+
+            // Application
             services.AddSingleton<IPostManager, PostManager>();
             services.AddSingleton<IPostRepository, PostRepository>();
 
@@ -141,7 +146,7 @@ namespace Post
                         npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), null);
                     });
             },
-            ServiceLifetime.Scoped);
+            ServiceLifetime.Singleton);
 
             return services;
         }

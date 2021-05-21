@@ -4,7 +4,7 @@ namespace Post.Application.Events
 {
     public class PostDeletedEvent
     {
-        public Guid PostId { get; set; }
-        public Guid AuthorId { get; set; }
+        public Guid PostDeleted_PostId { get; set; }
+        public Guid PostDeleted_AuthorId { get; set; }
     }
 }

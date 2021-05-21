@@ -32,17 +32,11 @@ namespace User
         {
             Log.Information($"Configuring {typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services");
 
-            // Add routing keys based on headers for message broker
-            var routingHeaders = new Dictionary<string, object>
-            {
-                { "", ""}
-            };
-
             // Service custom Extensions
             services
-                .AddCustomDbContext(Configuration)
-                .ConfigureMessageBroker(Configuration, routingHeaders)
                 .AddStriesServices()
+                .AddCustomDbContext(Configuration)
+                .ConfigureMessageBroker(Configuration)
                 .AddHostedServices();
 
             services.AddControllers();
@@ -88,8 +82,14 @@ namespace User
     static class CustomExtensionsMethods
     {
         // Message Broker configuration
-        public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration, Dictionary<string, object> routingHeaders)
+        public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration)
         {
+            // Add routing keys based on headers for message broker
+            var routingHeaders = new Dictionary<string, object>
+            {
+                { "", "" }
+            };
+
             // Get message broker settings from configuration
             var messageBrokerSettings = Configuration.GetSection("MessageBrokerSettings");
 
@@ -101,10 +101,10 @@ namespace User
                     ExchangeType.Headers));
 
             services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
-                "stries_default_exchange",
-                "stries_default_queue",
-                routingHeaders,
-                ExchangeType.Headers));
+            "stries_default_exchange",
+            "stries_default_queue",
+            routingHeaders,
+            ExchangeType.Headers));
 
             return services;
         }

@@ -5,7 +5,7 @@ using Serilog;
 
 namespace User.Controllers
 {
-    [Route("api/v1/")]
+    [Route("v1")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -13,7 +13,7 @@ namespace User.Controllers
         {
         }
 
-        [HttpGet("users/health-check")]
+        [HttpGet("health-check")]
         [ProducesResponseType(200)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         public IActionResult HealthCheck()

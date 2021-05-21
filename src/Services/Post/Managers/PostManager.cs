@@ -4,6 +4,7 @@ using Post.Application.Events;
 using Post.Application.Models;
 using Post.Database.Entities;
 using Post.Database.Models;
+using Post.Infrastructure.Exceptions;
 using Post.Infrastructure.MessageBroker;
 using Post.Infrastructure.MessageBroker.Helpers;
 using Post.Interfaces;
@@ -60,21 +61,22 @@ namespace Post.Managers
 
                 var postCreatedEvent = new PostCreatedEvent
                 {
-                    AuthorId = postToCreate.AuthorId,
-                    Title = postToCreate.Title,
-                    ImageUrl = postToCreate.ImageUrl,
-                    CreatedAt = creationDate
+                    PostCreated_AuthorId = postToCreate.AuthorId,
+                    PostCreated_Title = postToCreate.Title,
+                    PostCreated_ImageUrl = postToCreate.ImageUrl,
+                    PostCreated_CreatedAt = creationDate
                 };
 
-                // Send post creation event to message broker
+                // Send post creation event through message broker
                 _publisher.Publish(
                     JsonConvert.SerializeObject(postCreatedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("Post", "Created"));
+                    MessageBrokerHelpers.SetMessageRoute("PostCreated", "PostCreated"));
 
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
+                throw new PostNotProcessedException(ex, "Post id {postId}");
             }
 
             Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
@@ -82,24 +84,27 @@ namespace Post.Managers
             return postId;
         }
 
-        public async Task<bool> SaveAndPusblishPostAsync(Guid postId, string status, PostData newPostData)
+        public async Task SavePostAsync(Guid postId, PostData newPostData)
         {
             Log.Information($"Saving Post with id {postId}");
 
-            var updated = false;
-
             try
             {
-                var postToUpdate = await _postRepository.ReadPostAsync(postId);
+                var postToSave = await _postRepository.ReadPostAsync(postId);
 
-                if(postToUpdate == null)
+                if(postToSave == null)
                 {
                     Log.Information($"Post with id {postId} not found");
-
-                    return updated;
+                    throw new PostNotFoundException($"Post id {postId}");
                 }
 
-                postToUpdate.Body = new PostBody
+                if (postToSave.Status == PostStatus.published)
+                {
+                    Log.Information($"Post with id {postId} cannot be saved because it's already published");
+                    throw new PostAlreadyPublishedException($"Post id {postId}");
+                }
+
+                postToSave.Body = new PostBody
                 {
                     CompanyDescription = newPostData.CompanyDescription,
                     CompanyThesis = newPostData.CompanyThesis,
@@ -108,44 +113,72 @@ namespace Post.Managers
                     CompanyOther = newPostData.CompanyOther
                 };
 
-                postToUpdate.UpdatedAt = DateTime.UtcNow;
+                postToSave.UpdatedAt = DateTime.UtcNow;
 
-                var postStatus = status == "published" ? PostStatus.published : PostStatus.draft;
-
-                if (postToUpdate.Status != PostStatus.published && postToUpdate.Status == postStatus)
-                {
-                    Log.Information($"Post with Id {postId} is going to be published");
-                    postToUpdate.Status = PostStatus.published;
-                }
-
-                await _postRepository.UpdatePostAsync(postToUpdate);
-
-                if (postToUpdate.Status == PostStatus.published)
-                {
-                    var postPublishedEvent = new PostPublishedEvent
-                    {
-                        PostId = postId,
-                        Title = postToUpdate.Title,
-                        Summary = postToUpdate.Summary,
-                        ImageUrl = postToUpdate.ImageUrl,
-                        AuthorId = postToUpdate.AuthorId,
-                        PublishedAt = postToUpdate.PublishedAt
-                    };
-
-                    // Send post published event to message broker
-                    _publisher.Publish(
-                        JsonConvert.SerializeObject(postPublishedEvent),
-                        MessageBrokerHelpers.SetMessageRoute("Post", "Published"));
-                }
+                await _postRepository.UpdatePostAsync(postToSave);
             }
             catch(Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
+                throw new PostNotProcessedException(ex, "Post id {postId}");
             }
 
-            Log.Information($"Post with Id {postId} successfully saved with status {status}");
+            Log.Information($"Post with Id {postId} successfully saved");
+        }
 
-            return updated;
+        public async Task PublishPostAsync(Guid postId)
+        {
+            Log.Information($"Publishing Post with id {postId}");
+
+            try
+            {
+                var postToPublish = await _postRepository.ReadPostAsync(postId);
+
+                if (postToPublish == null)
+                {
+                    Log.Information($"Post with id {postId} not found");
+                    throw new PostNotFoundException($"Post id {postId}");
+                }
+
+                if(postToPublish.Status == PostStatus.published)
+                {
+                    Log.Information($"Post with id {postId} cannot be published because it's already published");
+                    throw new PostAlreadyPublishedException($"Post id {postToPublish.Id}");
+                }
+
+                var publishedDate = DateTime.UtcNow;
+
+                postToPublish.UpdatedAt = publishedDate;
+                postToPublish.PublishedAt = publishedDate;
+
+                // Update post status
+                postToPublish.Status = PostStatus.published;
+
+                await _postRepository.UpdatePostAsync(postToPublish);
+
+                // Create publish event for message propagation
+                var postPublishedEvent = new PostPublishedEvent
+                {
+                    PostPublished_PostId = postId,
+                    PostPublished_Title = postToPublish.Title,
+                    PostPublished_Summary = postToPublish.Summary,
+                    PostPublished_ImageUrl = postToPublish.ImageUrl,
+                    PostPublished_AuthorId = postToPublish.AuthorId,
+                    PostPublished_PublishedAt = postToPublish.PublishedAt
+                };
+
+                // Send post published event through message broker
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postPublishedEvent),
+                    MessageBrokerHelpers.SetMessageRoute("PostPublished", "PostPublished"));
+
+                Log.Information($"Post with Id {postId} successfully published at {publishedDate}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
+                throw new PostNotProcessedException(ex, "Post id {postId}");
+            }
         }
 
         public async Task RemovePostAsync(Guid postId)
@@ -154,22 +187,32 @@ namespace Post.Managers
 
             try
             {
+                var postToDelete = await _postRepository.ReadPostAsync(postId);
+
+                if(postToDelete == null)
+                {
+                    Log.Information($"Post with id {postId} not found");
+                    throw new PostNotFoundException($"Post id {postId}");
+
+                }
+
                 var authorId = await _postRepository.DeletePostAsync(postId);
 
                 var postDeletedEvent = new PostDeletedEvent
                 {
-                    PostId = postId,
-                    AuthorId = authorId
+                    PostDeleted_PostId = postId,
+                    PostDeleted_AuthorId = authorId
                 };
 
-                // Send post deletion event to message broker
+                // Send post deletion event through message broker
                 _publisher.Publish(
                     JsonConvert.SerializeObject(postDeletedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("Post", "Deleted"));
+                    MessageBrokerHelpers.SetMessageRoute("PostDeleted", "PostDeleted"));
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be deleted");
+                throw new PostNotProcessedException(ex, "Post id {postId}");
             }
 
             Log.Information($"Post with Id {postId} successfully deleted");

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Post.Application.Models;
+using Post.Infrastructure.Exceptions;
 using Post.Interfaces;
 using Serilog;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Post.Controllers
 {
-    [Route("api/v1/")]
+    [Route("v1")]
     [ApiController]
     public class PostsController : ControllerBase
     {
@@ -19,7 +20,7 @@ namespace Post.Controllers
             _postManager = postManager;
         }
 
-        [HttpGet("posts/health-check")]
+        [HttpGet("health-check")]
         [ProducesResponseType(200)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         public IActionResult HealthCheck()
@@ -29,7 +30,7 @@ namespace Post.Controllers
             return Ok();
         }
 
-        [HttpPost("posts")]
+        [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
@@ -55,49 +56,91 @@ namespace Post.Controllers
             return Ok(postId);
         }
 
-        [HttpPut("posts/{id:guid}")]
+        [HttpPost("{Id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> SaveAndPublishPostAsync(Guid postId, string status, [FromBody] PostData newPostData)
+        public async Task<IActionResult> SavePostAsync(Guid id, [FromBody] PostData newPostData)
         {
-            if (!ModelState.IsValid || postId == Guid.Empty || (status != "draft" && status != "published"))
+            if (!ModelState.IsValid || id == Guid.Empty)
                 return BadRequest();
 
             try
             {
-                await _postManager.SaveAndPusblishPostAsync(postId, status, newPostData);
+                await _postManager.SavePostAsync(id, newPostData);
             }
             catch(Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be updated");
+                Log.Error(ex, ex.Message, $"Post with id {id} cannot be saved");
 
-                return StatusCode(500);
+                return ex switch
+                {
+                    PostNotFoundException e => NotFound(),
+                    PostAlreadyPublishedException e => BadRequest(),
+
+                    _ => StatusCode(500)
+                };
             }
 
             return Ok();
         }
 
-        [HttpDelete("posts/{id:guid}")]
+        [HttpPut("{Id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> DeletePostAsync(Guid postId)
+        public async Task<IActionResult> PublishPostAsync(Guid id)
         {
-            if (postId == Guid.Empty)
+            if (!ModelState.IsValid || id == Guid.Empty)
                 return BadRequest();
 
             try
             {
-                await _postManager.RemovePostAsync(postId);
+                await _postManager.PublishPostAsync(id);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be deleted");
+                Log.Error(ex, ex.Message, $"Post with id {id} cannot be published");
 
-                return StatusCode(500);
+                return ex switch
+                {
+                    PostNotFoundException e => NotFound(),
+                    PostAlreadyPublishedException e => BadRequest(),
+
+                    _ => StatusCode(500)
+                };
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        public async Task<IActionResult> DeletePostAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            try
+            {
+                await _postManager.RemovePostAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {id} cannot be deleted");
+
+                return ex switch
+                {
+                    PostNotFoundException e => NotFound(),
+
+                    _ => StatusCode(500)
+                };
             }
 
             return Ok();

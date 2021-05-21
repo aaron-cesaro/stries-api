@@ -32,6 +32,7 @@ namespace Post.Infrastructure.MessageBroker
             {
                 {"x-message-ttl", timeToLive }
             };
+            // Create Queue and Exchenge
             _model.ExchangeDeclare(_exchange, exchangeType, arguments: ttl);
             _model.QueueDeclare(_queue,
                 durable: true,
