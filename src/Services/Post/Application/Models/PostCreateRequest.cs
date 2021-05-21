@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Post.Application.Models
 {
-    public class CreatePostRequest
+    public class PostCreateRequest
     {
         [Required(ErrorMessage = "Author Id field must be provided")]
         public Guid AuthorId { get; set; }

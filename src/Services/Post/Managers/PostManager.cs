@@ -25,7 +25,7 @@ namespace Post.Managers
             _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
 
-        public async Task<Guid> CreatePostAsync(CreatePostRequest postToCreate)
+        public async Task<Guid> CreatePostAsync(PostCreateRequest postToCreate)
         {
             Log.Information($"Creating Post with Author id {postToCreate.AuthorId}");
 
@@ -72,16 +72,63 @@ namespace Post.Managers
                     JsonConvert.SerializeObject(postCreatedEvent),
                     MessageBrokerHelpers.SetMessageRoute("PostCreated", "PostCreated"));
 
+                Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
+
+                return postId;
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
                 throw new PostNotProcessedException(ex, "Post id {postId}");
+            }           
+        }
+
+        public async Task<PostReponse> GetPostByIdAsync(Guid postId)
+        {
+            Log.Information($"Retrieving Post with id {postId}");
+
+            try
+            {
+                var postToGet = await _postRepository.ReadPostAsync(postId);
+
+                if (postToGet == null)
+                {
+                    Log.Information($"Post with id {postId} not found");
+                    throw new PostNotFoundException($"Post id {postId}");
+                }
+
+                var post = new PostReponse
+                {
+                    Id = postToGet.Id,
+                    AuthorId = postToGet.AuthorId,
+                    Title = postToGet.Title,
+                    Summary = postToGet.Summary,
+                    ImageUrl = postToGet.ImageUrl,
+                    Status = PostStatus.draft,
+                    PostData = new PostData
+                    {
+                        CompanyDescription = postToGet.Body.CompanyDescription,
+                        CompanyThesis = postToGet.Body.CompanyThesis,
+                        CompanyFinancials = postToGet.Body.CompanyFinancials,
+                        CompanyValuation = postToGet.Body.CompanyValuation,
+                        CompanyOther = postToGet.Body.CompanyOther
+                    },
+                    Rating = postToGet.Rating,
+                    RatingVoters = postToGet.RatingVoters,
+                    CreatedAt = postToGet.CreatedAt,
+                    UpdatedAt = postToGet.UpdatedAt,
+                    PublishedAt = postToGet.PublishedAt
+                };
+
+                Log.Information($"Post with Id {postId} successfully retrieved");
+
+                return post;
             }
-
-            Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
-
-            return postId;
+            catch(Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be retrieved");
+                throw new PostNotProcessedException(ex, "Post id {postId}");
+            }
         }
 
         public async Task SavePostAsync(Guid postId, PostData newPostData)

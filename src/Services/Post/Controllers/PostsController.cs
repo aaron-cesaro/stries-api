@@ -17,7 +17,7 @@ namespace Post.Controllers
 
         public PostsController(IPostManager postManager)
         {
-            _postManager = postManager;
+            _postManager = postManager; 
         }
 
         [HttpGet("health-check")]
@@ -31,11 +31,11 @@ namespace Post.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Guid), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostRequest postRequest)
+        public async Task<IActionResult> CreatePostAsync([FromBody] PostCreateRequest postRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -45,6 +45,8 @@ namespace Post.Controllers
             try
             {
                 postId = await _postManager.CreatePostAsync(postRequest);
+
+                return Ok(postId);
             }
             catch (Exception ex)
             {
@@ -52,8 +54,36 @@ namespace Post.Controllers
 
                 return StatusCode(500);
             }
+        }
 
-            return Ok(postId);
+        [HttpGet("{Id:guid}")]
+        [ProducesResponseType(typeof(PostReponse), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        public async Task<IActionResult> GetPostAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            try
+            {
+                var post = await _postManager.GetPostByIdAsync(id);
+
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {id} cannot be retrieved");
+
+                return ex switch
+                {
+                    PostNotFoundException e => NotFound(),
+
+                    _ => StatusCode(500)
+                };
+            }
         }
 
         [HttpPost("{Id:guid}")]

@@ -12,7 +12,14 @@ namespace Post.Interfaces
         /// </summary>
         /// <param name="postToCreate"></param>
         /// <returns>Id of the created Post</returns>
-        Task<Guid> CreatePostAsync(CreatePostRequest postToCreate);
+        Task<Guid> CreatePostAsync(PostCreateRequest postToCreate);
+
+        /// <summary>
+        /// Get a Post with provided postId
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns>The Post with provided postId</returns>
+        Task<PostReponse> GetPostByIdAsync(Guid postId);
 
         /// <summary>
         /// Update a Post with financial or user generated content
