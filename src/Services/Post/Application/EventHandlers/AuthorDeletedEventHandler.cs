@@ -15,12 +15,12 @@ namespace Post.Application.EventHandlers
     public class AuthorDeletedEventHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
-        private readonly IAuthorManager _authorManager;
+        private readonly IPostManager _postManager;
 
-        public AuthorDeletedEventHandler(ISubscriber subscriber, IAuthorManager authorManager)
+        public AuthorDeletedEventHandler(ISubscriber subscriber, IPostManager postManager)
         {
             _subscriber = subscriber;
-            _authorManager = authorManager;
+            _postManager = postManager;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ namespace Post.Application.EventHandlers
 
             try
             {
-                var deleted = _authorManager.DeleteAuthorAsync(response.Id);
+                var deleted = _postManager.DeleteAuthorAsync(response.Id);
 
                 return true;
             }

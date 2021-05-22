@@ -124,11 +124,9 @@ namespace Post
             // Application
             services.AddSingleton<IPostManager, PostManager>();
             services.AddSingleton<IPostRepository, PostRepository>();
-            services.AddSingleton<IAuthorManager, AuthorManager>();
-            services.AddSingleton<IAuthorRepository, AuthorRepository>();
 
             return services;
-        }
+        } 
 
         // Add Hosted Services for background tasks
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
