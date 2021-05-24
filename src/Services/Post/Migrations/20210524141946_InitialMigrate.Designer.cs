@@ -11,7 +11,7 @@ using Post.Database.Entities;
 namespace Post.Migrations
 {
     [DbContext(typeof(PostContext))]
-    [Migration("20210524065234_InitialMigrate")]
+    [Migration("20210524141946_InitialMigrate")]
     partial class InitialMigrate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Post.Migrations
 
             modelBuilder.Entity("Post.Database.Entities.AuthorEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("AuthorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -56,14 +56,14 @@ namespace Post.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthorId");
 
                     b.ToTable("Authors", "Post");
                 });
 
             modelBuilder.Entity("Post.Database.Entities.PostEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("PostId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -103,7 +103,7 @@ namespace Post.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("PostId");
 
                     b.ToTable("Posts", "Post");
                 });

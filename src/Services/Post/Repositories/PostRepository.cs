@@ -25,7 +25,7 @@ namespace Post.Repositories
 
             try
             {
-                post.Id = postId;
+                post.PostId = postId;
 
                 _postContext.Posts.Add(post);
                 await _postContext.SaveChangesAsync();
@@ -46,7 +46,7 @@ namespace Post.Repositories
             try
             {
                 post = await _postContext.Posts
-                 .FirstOrDefaultAsync(p => p.Id == postId);
+                 .FirstOrDefaultAsync(p => p.PostId == postId);
             }
             catch (Exception ex)
             {
@@ -67,8 +67,8 @@ namespace Post.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post {post.Id} not updated");
-                throw new PostDbOperationNotExecutedException(ex, $"Post id {post.Id}");
+                Log.Error(ex, ex.Message, $"Post {post.PostId} not updated");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {post.PostId}");
             }
         }
 
@@ -78,7 +78,7 @@ namespace Post.Repositories
 
             try
             {
-                var postToDelete = await _postContext.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+                var postToDelete = await _postContext.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
 
                 authorId = postToDelete.AuthorId;
 
@@ -123,8 +123,8 @@ namespace Post.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Author {author.Id} not inserted");
-                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.Id}");
+                Log.Error(ex, ex.Message, $"Author {author.AuthorId} not inserted");
+                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.AuthorId}");
             }
         }
 
@@ -135,7 +135,7 @@ namespace Post.Repositories
             try
             {
                 author = await _postContext.Authors
-                 .FirstOrDefaultAsync(a => a.Id == authorId);
+                 .FirstOrDefaultAsync(a => a.AuthorId == authorId);
             }
             catch (Exception ex)
             {
@@ -156,8 +156,8 @@ namespace Post.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Author {author.Id} not updated");
-                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.Id}");
+                Log.Error(ex, ex.Message, $"Author {author.AuthorId} not updated");
+                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.AuthorId}");
             }
         }
 
@@ -166,7 +166,7 @@ namespace Post.Repositories
             try
             {
                 var authorToDelete = await _postContext.Authors
-                    .FirstOrDefaultAsync(a => a.Id == authorId);
+                    .FirstOrDefaultAsync(a => a.AuthorId == authorId);
 
                 _postContext.Authors.Remove(authorToDelete);
 

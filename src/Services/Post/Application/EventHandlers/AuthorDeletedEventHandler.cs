@@ -35,7 +35,7 @@ namespace Post.Application.EventHandlers
 
             try
             {
-                var authorDeleted = await _postManager.DeleteAuthorAsync(response.Id);
+                await _postManager.DeleteAuthorByIdAsync(response.Id);
             }
             catch(Exception)
             {

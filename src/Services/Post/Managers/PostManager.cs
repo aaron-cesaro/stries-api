@@ -108,7 +108,7 @@ namespace Post.Managers
 
                 var post = new PostReponse
                 {
-                    Id = postToGet.Id,
+                    Id = postToGet.PostId,
                     Author = postAuthor,
                     Title = postToGet.Title,
                     Summary = postToGet.Summary,
@@ -207,7 +207,7 @@ namespace Post.Managers
                 if(postToPublish.Status == PostStatus.published)
                 {
                     Log.Information($"Post with id {postId} cannot be published because it's already published");
-                    throw new PostAlreadyPublishedException($"Post id {postToPublish.Id}");
+                    throw new PostAlreadyPublishedException($"Post id {postToPublish.PostId}");
                 }
 
                 var authorIsPresent = await AuthorIsPresentAsync(postToPublish.AuthorId);
@@ -253,7 +253,7 @@ namespace Post.Managers
             }
         }
 
-        public async Task RemovePostAsync(Guid postId)
+        public async Task RemovePostByIdAsync(Guid postId)
         {
             Log.Information($"Deleting Post with id {postId}");
 
@@ -290,7 +290,7 @@ namespace Post.Managers
             }
         }
 
-        public async Task RemoveAllPostsByAuthorAsync(Guid authorId)
+        public async Task RemoveAllPostsByAuthorIdAsync(Guid authorId)
         {
             Log.Information($"Deleting all Post by Author id {authorId}");
 
@@ -323,7 +323,7 @@ namespace Post.Managers
 
             var author = new AuthorEntity
             {
-                Id = authorToCreate.Id,
+                AuthorId = authorToCreate.Id,
                 FirstName = authorToCreate.FirstName,
                 LastName = authorToCreate.LastName,
                 NickName = authorToCreate.NickName,
@@ -339,9 +339,9 @@ namespace Post.Managers
 
                 await _postRepository.InsertAuthorAsync(author);
 
-                Log.Information($"Author id {author.Id} successfully created");
+                Log.Information($"Author id {author.AuthorId} successfully created");
 
-                return author.Id;
+                return author.AuthorId;
             }
             catch (Exception ex)
             {
@@ -366,7 +366,7 @@ namespace Post.Managers
 
                 var author = new AuthorResponse
                 {
-                    Id = authorToGet.Id,
+                    Id = authorToGet.AuthorId,
                     FirstName = authorToGet.FirstName,
                     LastName = authorToGet.LastName,
                     NickName = authorToGet.NickName,
@@ -414,7 +414,7 @@ namespace Post.Managers
             }
         }
 
-        public async Task<bool> DeleteAuthorAsync(Guid authorId)
+        public async Task DeleteAuthorByIdAsync(Guid authorId)
         {
             Log.Information($"Deleting author with id {authorId}");
 
@@ -429,13 +429,11 @@ namespace Post.Managers
 
                 }
 
-                await RemoveAllPostsByAuthorAsync(authorId);
+                await RemoveAllPostsByAuthorIdAsync(authorId);
 
                 await _postRepository.DeleteAuthorAsync(authorId);
 
                 Log.Information($"Author with Id {authorId} successfully deleted");
-
-                return true;
 
             }
             catch (Exception ex)

@@ -10,7 +10,7 @@ namespace Post.Interfaces
         /// Create a new Post
         /// </summary>
         /// <param name="postToCreate"></param>
-        /// <returns>Id of the created Post</returns>
+        /// <returns>Returns the id of the Post if created, an empty Guid if author is already present</returns>
         Task<Guid> CreatePostAsync(PostCreateRequest postToCreate);
 
         /// <summary>
@@ -40,14 +40,14 @@ namespace Post.Interfaces
         /// </summary>
         /// <param name="postId"></param>
         /// <returns>Void</returns>
-        Task RemovePostAsync(Guid postId);
+        Task RemovePostByIdAsync(Guid postId);
 
         /// <summary>
         /// Remove all posts created by an author
         /// </summary>
         /// <param name="authorId"></param>
         /// <returns>Void</returns>
-        Task RemoveAllPostsByAuthorAsync(Guid authorId);
+        Task RemoveAllPostsByAuthorIdAsync(Guid authorId);
 
         /// <summary>
         /// Create a new author with provided information
@@ -75,6 +75,6 @@ namespace Post.Interfaces
         /// </summary>
         /// <param name="authorId"></param>
         /// <returns>Void</returns>
-        Task<bool> DeleteAuthorAsync(Guid authorId);
+        Task DeleteAuthorByIdAsync(Guid authorId);
     }
 }

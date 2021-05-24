@@ -16,7 +16,7 @@ namespace Post.Migrations
                 schema: "Post",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     NickName = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: true),
@@ -28,7 +28,7 @@ namespace Post.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Authors", x => x.Id);
+                    table.PrimaryKey("PK_Authors", x => x.AuthorId);
                 });
 
             migrationBuilder.CreateTable(
@@ -36,7 +36,7 @@ namespace Post.Migrations
                 schema: "Post",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PostId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     Summary = table.Column<string>(type: "character varying(280)", maxLength: 280, nullable: true),
@@ -51,7 +51,7 @@ namespace Post.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.PrimaryKey("PK_Posts", x => x.PostId);
                 });
         }
 

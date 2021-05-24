@@ -163,7 +163,7 @@ namespace Post.Controllers
 
             try
             {
-                await _postManager.RemovePostAsync(id);
+                await _postManager.RemovePostByIdAsync(id);
             }
             catch (Exception ex)
             {

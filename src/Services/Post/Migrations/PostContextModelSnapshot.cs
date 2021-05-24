@@ -22,7 +22,7 @@ namespace Post.Migrations
 
             modelBuilder.Entity("Post.Database.Entities.AuthorEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("AuthorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -54,14 +54,14 @@ namespace Post.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthorId");
 
                     b.ToTable("Authors", "Post");
                 });
 
             modelBuilder.Entity("Post.Database.Entities.PostEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("PostId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -101,7 +101,7 @@ namespace Post.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("PostId");
 
                     b.ToTable("Posts", "Post");
                 });
