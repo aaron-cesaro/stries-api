@@ -6,7 +6,7 @@
     <ProjectGuid>ab54d6ad-e962-4820-b92e-f69c61bf248d</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>web.apigateway</DockerServiceName>
+    <DockerServiceName>apigatewayweb</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
