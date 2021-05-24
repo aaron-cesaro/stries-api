@@ -46,6 +46,9 @@ namespace Post.Controllers
             {
                 postId = await _postManager.CreatePostAsync(postRequest);
 
+                if(postId == Guid.Empty)
+                    return StatusCode(500);
+
                 return Ok(postId);
             }
             catch (Exception ex)
@@ -80,6 +83,7 @@ namespace Post.Controllers
                 return ex switch
                 {
                     PostNotFoundException e => NotFound(),
+                    AuthorNotFoundException e => NotFound(),
 
                     _ => StatusCode(500)
                 };

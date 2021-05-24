@@ -31,6 +31,8 @@ namespace Post.Managers
 
             var creationDate = DateTime.UtcNow;
 
+            var postId = Guid.Empty;
+
             var post = new PostEntity
             {
                 AuthorId = postToCreate.AuthorId,
@@ -52,10 +54,15 @@ namespace Post.Managers
                 UpdatedAt = creationDate
             };
 
-            var postId = Guid.Empty;
-
             try
             {
+                var authorIsPresent = await AuthorIsPresentAsync(postToCreate.AuthorId);
+
+                if (!authorIsPresent)
+                {
+                    Log.Error($"Post with Author id {postToCreate.AuthorId} cannot be created because author was not found");
+                    return postId;
+                }
 
                 postId = await _postRepository.InsertPostAsync(post);
 
@@ -97,10 +104,12 @@ namespace Post.Managers
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
+                var postAuthor = await GetAuthorByIdAsync(postToGet.AuthorId);
+
                 var post = new PostReponse
                 {
                     Id = postToGet.Id,
-                    AuthorId = postToGet.AuthorId,
+                    Author = postAuthor,
                     Title = postToGet.Title,
                     Summary = postToGet.Summary,
                     ImageUrl = postToGet.ImageUrl,
@@ -151,6 +160,14 @@ namespace Post.Managers
                     throw new PostAlreadyPublishedException($"Post id {postId}");
                 }
 
+                var authorIsPresent = await AuthorIsPresentAsync(postToSave.AuthorId);
+
+                if (!authorIsPresent)
+                {
+                    Log.Error($"Post with Author id {postToSave.AuthorId} cannot be saved because author was not found");
+                    throw new PostNotProcessedException($"Post id {postId}");
+                }
+
                 postToSave.Body = new PostBody
                 {
                     CompanyDescription = newPostData.CompanyDescription,
@@ -193,6 +210,14 @@ namespace Post.Managers
                     throw new PostAlreadyPublishedException($"Post id {postToPublish.Id}");
                 }
 
+                var authorIsPresent = await AuthorIsPresentAsync(postToPublish.AuthorId);
+
+                if (!authorIsPresent)
+                {
+                    Log.Error($"Post with Author id {postToPublish.AuthorId} cannot be published because author was not found");
+                    throw new PostNotProcessedException($"Post id {postId}");
+                }
+
                 // Update post status
                 postToPublish.Status = PostStatus.published;
 
@@ -202,8 +227,6 @@ namespace Post.Managers
                 postToPublish.PublishedAt = publishedDate;
 
                 await _postRepository.UpdatePostAsync(postToPublish);
-
-
 
                 // Create publish event for message propagation
                 var postPublishedEvent = new PostPublishedEvent
@@ -288,6 +311,14 @@ namespace Post.Managers
         {
             Log.Information($"Creating Author Nickname {authorToCreate.NickName}");
 
+            var authorIsPresent = await AuthorIsPresentAsync(authorToCreate.Id);
+
+            if (authorIsPresent)
+            {
+                Log.Error($"Author id {authorToCreate.Id} cannot be created because author is already present");
+                throw new AuthorNotProcessedException($"Author id {authorToCreate.Id}");
+            }
+
             var creationDate = DateTime.UtcNow;
 
             var author = new AuthorEntity
@@ -319,7 +350,7 @@ namespace Post.Managers
             }
         }
 
-        public async Task<AuthorResponse> ReadAuthorByIdAsync(Guid authorId)
+        public async Task<AuthorResponse> GetAuthorByIdAsync(Guid authorId)
         {
             Log.Information($"Retrieving Author with id {authorId}");
 
@@ -410,7 +441,33 @@ namespace Post.Managers
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Author with id {authorId} cannot be deleted");
-                throw new PostNotProcessedException(ex, $"Author id {authorId}");
+                throw new AuthNotProcessedException(ex, $"Author id {authorId}");
+            }
+        }
+
+        private async Task<bool> AuthorIsPresentAsync(Guid authorId)
+        {
+            Log.Information($"Search Author with id {authorId}");
+
+            var isPresent = false;
+
+            try
+            {
+                var authorToGet = await _postRepository.ReadAuthorAsync(authorId);
+
+                if (authorToGet != null)
+                {
+                    isPresent = true;
+
+                    Log.Information($"Author with Id {authorId} not found");
+                }
+
+                return isPresent;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Author with id {authorId} cannot be searched");
+                throw new AuthorNotProcessedException(ex, $"Author id {authorId}");
             }
         }
     }

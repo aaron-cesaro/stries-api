@@ -20,6 +20,45 @@ namespace Post.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("Post.Database.Entities.AuthorEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Biography")
+                        .HasMaxLength(280)
+                        .HasColumnType("character varying(280)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NickName")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<int>("PostPublished")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Authors", "Post");
+                });
+
             modelBuilder.Entity("Post.Database.Entities.PostEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -34,6 +73,9 @@ namespace Post.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("varchar(200)");
 
                     b.Property<DateTime>("PublishedAt")
                         .HasColumnType("timestamp without time zone");
@@ -58,9 +100,6 @@ namespace Post.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("varchar(200)");
 
                     b.HasKey("Id");
 

@@ -61,7 +61,7 @@ namespace Post.Interfaces
         /// </summary>
         /// <param name="authorId"></param>
         /// <returns>Author response model</returns>
-        Task<AuthorResponse> ReadAuthorByIdAsync(Guid authorId);
+        Task<AuthorResponse> GetAuthorByIdAsync(Guid authorId);
 
         /// <summary>
         /// Update an author information with those provided in the author parameter

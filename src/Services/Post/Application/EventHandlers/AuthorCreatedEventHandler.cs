@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Post.Application.EventHandlers.Events;
 using Post.Application.Events;
+using Post.Application.Models;
 using Post.Infrastructure.MessageBroker;
 using Post.Interfaces;
 using Serilog;
@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace Post.Application.EventHandlers
 {
-    public class AuthorDeletedEventHandler : IHostedService
+    public class AuthorCreatedEventHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
         private readonly IPostManager _postManager;
 
-        public AuthorDeletedEventHandler(ISubscriber subscriber, IPostManager postManager)
+        public AuthorCreatedEventHandler(ISubscriber subscriber, IPostManager postManager)
         {
             _subscriber = subscriber;
             _postManager = postManager;
@@ -31,15 +31,15 @@ namespace Post.Application.EventHandlers
 
         private async Task<bool> Subscribe(string message, IDictionary<string, object> header)
         {
-            var response = JsonConvert.DeserializeObject<AuthorDeletedEvent>(message);
+            var response = JsonConvert.DeserializeObject<AuthorCreateRequest>(message);
 
             try
             {
-                var authorDeleted = await _postManager.DeleteAuthorAsync(response.Id);
+                var authorId = await _postManager.CreateAuthorAsync(response);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                Log.Information($"Author with id {response.Id} cannot be deleted");
+                Log.Information($"Author with id {response.Id} cannot be created");
                 return false;
             }
 
