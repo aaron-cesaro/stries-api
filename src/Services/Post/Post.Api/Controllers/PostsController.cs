@@ -46,7 +46,7 @@ namespace Post.Api.Controllers
             {
                 postId = await _postManager.CreatePostAsync(postRequest);
 
-                if(postId == Guid.Empty)
+                if (postId == Guid.Empty)
                     return StatusCode(500);
 
                 return Ok(postId);
@@ -105,7 +105,7 @@ namespace Post.Api.Controllers
             {
                 await _postManager.SavePostAsync(id, newPostData);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {id} cannot be saved");
 

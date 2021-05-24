@@ -23,7 +23,7 @@ services:
     image: ${DOCKER_REGISTRY-}post
     build:
       context: .
-      dockerfile: Services/Post.Api/Dockerfile
+      dockerfile: Services/Post/Post.Api/Dockerfile
     depends_on:
       - rabbitmq
       - postgres
@@ -32,7 +32,7 @@ services:
     image: ${DOCKER_REGISTRY-}user
     build:
       context: .
-      dockerfile: Services/User.Api/Dockerfile
+      dockerfile: Services/User/User.Api/Dockerfile
     depends_on:
       - rabbitmq
       - postgres

@@ -61,7 +61,8 @@ namespace Post.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => {
+                app.UseSwaggerUI(c =>
+                {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1");
                     c.RoutePrefix = string.Empty;
                 });
@@ -124,7 +125,7 @@ namespace Post.Api
             services.AddSingleton<IPostRepository, PostRepository>();
 
             return services;
-        } 
+        }
 
         // Add Hosted Services for background tasks
         public static IServiceCollection AddHostedServices(this IServiceCollection services)

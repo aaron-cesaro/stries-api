@@ -87,7 +87,7 @@ namespace Post.Api.Managers
             {
                 Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
                 throw new PostNotProcessedException(ex, $"Post id {postId}");
-            }           
+            }
         }
 
         public async Task<PostReponse> GetPostByIdAsync(Guid postId)
@@ -133,7 +133,7 @@ namespace Post.Api.Managers
 
                 return post;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be retrieved");
                 throw new PostNotProcessedException(ex, $"Post id {postId}");
@@ -148,7 +148,7 @@ namespace Post.Api.Managers
             {
                 var postToSave = await _postRepository.ReadPostByIdAsync(postId);
 
-                if(postToSave == null)
+                if (postToSave == null)
                 {
                     Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
@@ -183,7 +183,7 @@ namespace Post.Api.Managers
 
                 Log.Information($"Post with Id {postId} successfully saved");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
                 throw new PostNotProcessedException(ex, $"Post id {postId}");
@@ -204,7 +204,7 @@ namespace Post.Api.Managers
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
-                if(postToPublish.Status == PostStatus.published)
+                if (postToPublish.Status == PostStatus.published)
                 {
                     Log.Information($"Post with id {postId} cannot be published because it's already published");
                     throw new PostAlreadyPublishedException($"Post id {postToPublish.PostId}");
@@ -261,7 +261,7 @@ namespace Post.Api.Managers
             {
                 var postToDelete = await _postRepository.ReadPostByIdAsync(postId);
 
-                if(postToDelete == null)
+                if (postToDelete == null)
                 {
                     Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
