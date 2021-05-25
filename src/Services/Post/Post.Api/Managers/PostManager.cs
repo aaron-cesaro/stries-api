@@ -506,7 +506,7 @@ namespace Post.Api.Managers
             }
         }
 
-        private async Task<bool> AuthorIsPresentAsync(Guid authorId)
+        public async Task<bool> AuthorIsPresentAsync(Guid authorId)
         {
             Log.Information($"Search Author with id {authorId}");
 

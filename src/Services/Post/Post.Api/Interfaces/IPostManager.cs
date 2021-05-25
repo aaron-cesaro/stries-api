@@ -83,5 +83,12 @@ namespace Post.Api.Interfaces
         /// <param name="authorId"></param>
         /// <returns>Void</returns>
         Task DeleteAuthorByIdAsync(Guid authorId);
+
+        /// <summary>
+        /// Check if an author is present
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns>Return true if author is present, false otherwise</returns>
+        Task<bool> AuthorIsPresentAsync(Guid authorId);
     }
 }
