@@ -1,4 +1,5 @@
-﻿using Post.Api.Database.Models;
+﻿using Post.Api.Application.Models;
+using Post.Api.Database.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -41,6 +42,8 @@ namespace Post.Api.Database.Entities
         public int RatingVoters { get; set; }
 
         public DateTime PublishedAt { get; set; }
+
+        public DateTime ArchivedAt { get; set; }
 
         [Required(ErrorMessage = "Created at field must be provided")]
         public DateTime CreatedAt { get; set; }

@@ -3,7 +3,6 @@ using Post.Api.Application.EventHandlers.Events;
 using Post.Api.Application.Events;
 using Post.Api.Application.Models;
 using Post.Api.Database.Entities;
-using Post.Api.Database.Models;
 using Post.Api.Infrastructure.Exceptions;
 using Post.Api.Infrastructure.MessageBroker;
 using Post.Api.Infrastructure.MessageBroker.Helpers;
@@ -68,10 +67,10 @@ namespace Post.Api.Managers
 
                 var postCreatedEvent = new PostCreatedEvent
                 {
-                    PostCreated_AuthorId = postToCreate.AuthorId,
-                    PostCreated_Title = postToCreate.Title,
-                    PostCreated_ImageUrl = postToCreate.ImageUrl,
-                    PostCreated_CreatedAt = creationDate
+                    AuthorId = postToCreate.AuthorId,
+                    Title = postToCreate.Title,
+                    ImageUrl = postToCreate.ImageUrl,
+                    CreatedAt = creationDate
                 };
 
                 // Send post creation event through message broker
@@ -192,7 +191,7 @@ namespace Post.Api.Managers
 
         public async Task PublishPostAsync(Guid postId)
         {
-            Log.Information($"Publishing Post with id {postId}");
+            Log.Information($"Publishing Post id {postId}");
 
             try
             {
@@ -231,12 +230,12 @@ namespace Post.Api.Managers
                 // Create publish event for message propagation
                 var postPublishedEvent = new PostPublishedEvent
                 {
-                    PostPublished_PostId = postId,
-                    PostPublished_Title = postToPublish.Title,
-                    PostPublished_Summary = postToPublish.Summary,
-                    PostPublished_ImageUrl = postToPublish.ImageUrl,
-                    PostPublished_AuthorId = postToPublish.AuthorId,
-                    PostPublished_PublishedAt = postToPublish.PublishedAt
+                    PostId = postId,
+                    Title = postToPublish.Title,
+                    Summary = postToPublish.Summary,
+                    ImageUrl = postToPublish.ImageUrl,
+                    AuthorId = postToPublish.AuthorId,
+                    PublishedAt = postToPublish.PublishedAt
                 };
 
                 // Send post published event through message broker
@@ -248,7 +247,71 @@ namespace Post.Api.Managers
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be saved");
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be published");
+                throw new PostNotProcessedException(ex, $"Post id {postId}");
+            }
+        }
+
+        public async Task ArchivePostAsync(Guid postId)
+        {
+            Log.Information($"Archiving Post id {postId}");
+
+            try
+            {
+                var postToArchive = await _postRepository.ReadPostByIdAsync(postId);
+
+                if (postToArchive == null)
+                {
+                    Log.Information($"Post with id {postId} not found");
+                    throw new PostNotFoundException($"Post id {postId}");
+                }
+
+                if (postToArchive.Status == PostStatus.archived)
+                {
+                    Log.Information($"Post with id {postId} cannot be archived because it's already archived");
+                    throw new PostAlreadyArchivedException($"Post id {postToArchive.PostId}");
+                }
+
+                var authorIsPresent = await AuthorIsPresentAsync(postToArchive.AuthorId);
+
+                if (!authorIsPresent)
+                {
+                    Log.Error($"Post with Author id {postToArchive.AuthorId} cannot be archived because author was not found");
+                    throw new PostNotProcessedException($"Post id {postId}");
+                }
+
+                // Update post status
+                postToArchive.Status = PostStatus.archived;
+
+                var archivedDate = DateTime.UtcNow;
+
+                postToArchive.UpdatedAt = archivedDate;
+
+                postToArchive.ArchivedAt = archivedDate;
+
+                await _postRepository.UpdatePostAsync(postToArchive);
+
+                // Create publish event for message propagation
+                var postArchivedEvent = new PostArchivedEvent
+                {
+                    PostId = postId,
+                    Title = postToArchive.Title,
+                    Summary = postToArchive.Summary,
+                    ImageUrl = postToArchive.ImageUrl,
+                    AuthorId = postToArchive.AuthorId,
+                    ArchivedAt = postToArchive.ArchivedAt
+                };
+
+                // Send post published event through message broker
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postArchivedEvent),
+                    MessageBrokerHelpers.SetMessageRoute("PostArchived", "PostArchived"));
+
+                Log.Information($"Post with Id {postId} successfully archived at {archivedDate}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Post with id {postId} cannot be archived");
                 throw new PostNotProcessedException(ex, $"Post id {postId}");
             }
         }
@@ -272,8 +335,8 @@ namespace Post.Api.Managers
 
                 var postDeletedEvent = new PostDeletedEvent
                 {
-                    PostDeleted_PostId = postId,
-                    PostDeleted_AuthorId = authorId
+                    PostId = postId,
+                    AuthorId = authorId
                 };
 
                 // Send post deletion event through message broker

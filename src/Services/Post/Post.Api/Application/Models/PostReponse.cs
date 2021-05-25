@@ -1,5 +1,4 @@
-﻿using Post.Api.Database.Models;
-using System;
+﻿using System;
 
 namespace Post.Api.Application.Models
 {

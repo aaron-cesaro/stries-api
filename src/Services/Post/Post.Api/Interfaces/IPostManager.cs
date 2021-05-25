@@ -10,7 +10,7 @@ namespace Post.Api.Interfaces
         /// Create a new Post
         /// </summary>
         /// <param name="postToCreate"></param>
-        /// <returns>Returns the id of the Post if created, an empty Guid if author is already present</returns>
+        /// <returns>Returns the id of the Post if created, an empty Guid if author is not present</returns>
         Task<Guid> CreatePostAsync(PostCreateRequest postToCreate);
 
         /// <summary>
@@ -29,11 +29,18 @@ namespace Post.Api.Interfaces
         Task SavePostAsync(Guid postId, PostData newPostData);
 
         /// <summary>
-        /// Publish a Post with financial or user generated content
+        /// Publish a Post
         /// </summary>
         /// <param name="postId"></param>
         /// <returns>True if the post has been published, false otherwise</returns>
         Task PublishPostAsync(Guid postId);
+
+        /// <summary>
+        /// Archive a Post
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns>True if the post has been archived, false otherwise</returns>
+        Task ArchivePostAsync(Guid postId);
 
         /// <summary>
         /// Permanently remove a post

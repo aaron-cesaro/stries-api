@@ -1,4 +1,4 @@
-﻿namespace Post.Api.Database.Models
+﻿namespace Post.Api.Application.Models
 {
     /// <summary>
     /// Enumerate statuses that a Post can assume:

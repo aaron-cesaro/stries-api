@@ -40,11 +40,9 @@ namespace Post.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var postId = Guid.Empty;
-
             try
             {
-                postId = await _postManager.CreatePostAsync(postRequest);
+                var postId = await _postManager.CreatePostAsync(postRequest);
 
                 if (postId == Guid.Empty)
                     return StatusCode(500);
@@ -82,15 +80,15 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException e => NotFound(),
-                    AuthorNotFoundException e => NotFound(),
+                    PostNotFoundException => NotFound(),
+                    AuthorNotFoundException => NotFound(),
 
                     _ => StatusCode(500)
                 };
             }
         }
 
-        [HttpPost("{Id:guid}")]
+        [HttpPut("{Id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -111,8 +109,8 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException e => NotFound(),
-                    PostAlreadyPublishedException e => BadRequest(),
+                    PostNotFoundException => NotFound(),
+                    PostAlreadyPublishedException => BadRequest(),
 
                     _ => StatusCode(500)
                 };
@@ -121,28 +119,36 @@ namespace Post.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("{Id:guid}")]
+        [HttpPut("{Id:guid}/{status:int}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> PublishPostAsync(Guid id)
+        public async Task<IActionResult> PublishOrArchivePostAsync(Guid id, int status)
         {
-            if (!ModelState.IsValid || id == Guid.Empty)
+            if (!ModelState.IsValid || id == Guid.Empty || (status != (int)PostStatus.published && status != (int)PostStatus.archived))
                 return BadRequest();
 
             try
             {
-                await _postManager.PublishPostAsync(id);
+                if (status == (int)PostStatus.published)
+                {
+                    await _postManager.PublishPostAsync(id);
+                }
+                else if (status == (int)PostStatus.archived)
+                {
+                    await _postManager.ArchivePostAsync(id);
+                }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with id {id} cannot be published");
+                Log.Error(ex, ex.Message, $"Post with id {id} cannot be published or archived");
 
                 return ex switch
                 {
-                    PostNotFoundException e => NotFound(),
-                    PostAlreadyPublishedException e => BadRequest(),
+                    PostNotFoundException => NotFound(),
+                    PostAlreadyPublishedException => BadRequest(),
+                    PostAlreadyArchivedException => BadRequest(),
 
                     _ => StatusCode(500)
                 };
@@ -171,7 +177,7 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException e => NotFound(),
+                    PostNotFoundException => NotFound(),
 
                     _ => StatusCode(500)
                 };
