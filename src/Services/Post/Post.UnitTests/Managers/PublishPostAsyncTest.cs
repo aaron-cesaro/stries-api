@@ -120,7 +120,7 @@ namespace Post.Managers.UnitTests
         }
 
         [Fact]
-        public async Task Publish_post_throws_exception_when_author_not_exists()
+        public async Task Publish_post_throws_exception_when_author_not_found()
         {
             // Arrange
             var fakePostId = Guid.NewGuid();

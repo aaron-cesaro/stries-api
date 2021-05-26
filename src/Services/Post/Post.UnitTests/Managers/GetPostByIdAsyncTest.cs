@@ -120,7 +120,7 @@ namespace Post.Managers.UnitTests
         }
 
         [Fact]
-        public async Task Get_post_throws_exception_when_author_not_exists()
+        public async Task Get_post_throws_exception_when_author_not_found()
         {
             // Arrange
             var fakePostId = Guid.NewGuid();
@@ -131,7 +131,7 @@ namespace Post.Managers.UnitTests
             var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Assert
-            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.GetPostByIdAsync(fakePostId));
+            await Assert.ThrowsAsync<AuthorNotFoundException>(() => postManager.GetPostByIdAsync(fakePostId));
         }
 
         [Fact]

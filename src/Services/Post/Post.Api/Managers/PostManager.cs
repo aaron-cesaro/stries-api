@@ -66,7 +66,7 @@ namespace Post.Api.Managers
             catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with Author id {postToCreate.AuthorId} cannot be created because author was not found");
-                throw new PostNotProcessedException(ex, $"Post title {postToCreate.Title}");
+                throw new AuthorNotFoundException(ex, $"Post title {postToCreate.Title}");
             }
             catch (Exception ex)
             {
@@ -125,7 +125,7 @@ namespace Post.Api.Managers
             catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with id {postId} cannot be created because author was not found");
-                throw new PostNotProcessedException(ex, $"Post id {postId}");
+                throw new AuthorNotFoundException(ex, $"Post id {postId}");
             }
             catch (Exception ex)
             {
@@ -171,10 +171,20 @@ namespace Post.Api.Managers
 
                 Log.Information($"Post with Id {postId} successfully saved");
             }
+            catch (PostNotFoundException ex)
+            {
+                Log.Information($"Post with id {postId} not found");
+                throw new PostNotFoundException(ex, $"Post id {postId}");
+            }
             catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with id {postId} cannot be saved because author was not found");
-                throw new PostNotProcessedException(ex, $"Post id {postId}");
+                throw new AuthorNotFoundException(ex, $"Post id {postId}");
+            }
+            catch (PostAlreadyPublishedException ex)
+            {
+                Log.Information($"Post with id {postId} cannot be published because it's already published");
+                throw new PostAlreadyPublishedException(ex, $"Post id {postId}");
             }
             catch (Exception ex)
             {

@@ -75,7 +75,7 @@ namespace Post.Managers.UnitTests
         }
 
         [Fact]
-        public async Task Create_post_throws_exception_when_author_not_exists()
+        public async Task Create_post_throws_exception_when_author_not_found()
         {
             // Arrange
             _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new AuthorNotFoundException());
@@ -85,7 +85,7 @@ namespace Post.Managers.UnitTests
             var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Assert
-            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.CreatePostAsync(_fakePostCreateRequest));
+            await Assert.ThrowsAsync<AuthorNotFoundException>(() => postManager.CreatePostAsync(_fakePostCreateRequest));
         }
 
         [Fact]

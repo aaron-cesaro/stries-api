@@ -53,7 +53,12 @@ namespace Post.Api.Controllers
             {
                 Log.Error(ex, ex.Message, $"Post {postRequest.Title} cannot be created");
 
-                return StatusCode(500);
+                return ex switch
+                {
+                    AuthorNotFoundException => NotFound($"Post {postRequest.Title}, author not found"),
+
+                    _ => StatusCode(500)
+                };
             }
         }
 
@@ -81,6 +86,7 @@ namespace Post.Api.Controllers
                 return ex switch
                 {
                     PostNotFoundException => NotFound($"Post {id} not found"),
+                    AuthorNotFoundException => NotFound($"Post {id}, author not found"),
 
                     _ => StatusCode(500)
                 };
@@ -109,8 +115,8 @@ namespace Post.Api.Controllers
                 return ex switch
                 {
                     PostNotFoundException => NotFound($"Post {id} not found"),
-                    PostAlreadyPublishedException => BadRequest($"Post {id} already published"),
                     AuthorNotFoundException => NotFound($"Post {id}, author not found"),
+                    PostAlreadyPublishedException => BadRequest($"Post {id} already published"),
 
                     _ => StatusCode(500)
                 };
