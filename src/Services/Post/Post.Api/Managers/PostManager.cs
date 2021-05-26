@@ -233,7 +233,10 @@ namespace Post.Api.Managers
                 };
 
                 // Send post published event through message broker
-                _publisher.Publish(JsonConvert.SerializeObject(postPublishedEvent), MessageBrokerRoutingKeys.POST_PUBLISHED, null);
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postPublishedEvent),
+                    MessageBrokerRoutingKeys.POST_PUBLISHED,
+                    MessageBrokerHeaders.SetMessageHeader("post", "published"));
 
                 Log.Information($"Post with Id {postId} successfully published at {publishedDate}");
             }
@@ -300,7 +303,10 @@ namespace Post.Api.Managers
                 };
 
                 // Send post published event through message broker
-                _publisher.Publish(JsonConvert.SerializeObject(postArchivedEvent), MessageBrokerRoutingKeys.POST_ARCHIVED, null);
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postArchivedEvent),
+                    MessageBrokerRoutingKeys.POST_ARCHIVED,
+                    MessageBrokerHeaders.SetMessageHeader("post", "archived"));
 
                 Log.Information($"Post with Id {postId} successfully archived at {archivedDate}");
             }
@@ -348,7 +354,10 @@ namespace Post.Api.Managers
                 };
 
                 // Send post deletion event through message broker
-                _publisher.Publish(JsonConvert.SerializeObject(postDeletedEvent), MessageBrokerRoutingKeys.POST_DELETED, null);
+                _publisher.Publish(
+                    JsonConvert.SerializeObject(postDeletedEvent),
+                    MessageBrokerRoutingKeys.POST_DELETED,
+                    MessageBrokerHeaders.SetMessageHeader("post", "deleted"));
 
                 Log.Information($"Post with Id {postId} by author {authorId} successfully deleted");
             }

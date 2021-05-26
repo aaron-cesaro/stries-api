@@ -22,11 +22,11 @@ namespace User.Api.Application.EventHandlers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _subscriber.Subscribe(Subscribe);
+            _subscriber.Subscribe(ProcessMessage);
             return Task.CompletedTask;
         }
 
-        private bool Subscribe(string message, IDictionary<string, object> header)
+        private bool ProcessMessage(string message, IDictionary<string, object> header)
         {
             var response = JsonConvert.DeserializeObject<TemplateEvent>(message);
 

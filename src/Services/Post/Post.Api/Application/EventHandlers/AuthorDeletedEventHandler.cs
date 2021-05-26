@@ -26,24 +26,27 @@ namespace Post.Api.Application.EventHandlers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _subscriber.SubscribeAsync(Subscribe);
+            _subscriber.SubscribeAsync(ProcessMessage);
             return Task.CompletedTask;
         }
 
-        private async Task<bool> Subscribe(string message, IDictionary<string, object> header)
+        private async Task<bool> ProcessMessage(string message, IDictionary<string, object> header)
         {
-            var response = JsonConvert.DeserializeObject<AuthorDeletedEvent>(message);
-
-            try
+            if (header.Keys.Contains("user") && header.Values.Contains("deleted"))
             {
-                await _postManager.DeleteAllPostsByAuthorIdAsync(response.Id);
+                var response = JsonConvert.DeserializeObject<AuthorDeletedEvent>(message);
 
-                await _authorManager.DeleteAuthorByIdAsync(response.Id);
-            }
-            catch (Exception)
-            {
-                Log.Information($"Author with id {response.Id} cannot be deleted");
-                return false;
+                try
+                {
+                    await _postManager.DeleteAllPostsByAuthorIdAsync(response.Id);
+
+                    await _authorManager.DeleteAuthorByIdAsync(response.Id);
+                }
+                catch (Exception)
+                {
+                    Log.Information($"Author with id {response.Id} cannot be deleted");
+                    return false;
+                }
             }
 
             return true;

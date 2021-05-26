@@ -24,22 +24,25 @@ namespace Post.Api.Application.EventHandlers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _subscriber.SubscribeAsync(Subscribe);
+            _subscriber.SubscribeAsync(ProcessMessage);
             return Task.CompletedTask;
         }
 
-        private async Task<bool> Subscribe(string message, IDictionary<string, object> header)
+        private async Task<bool> ProcessMessage(string message, IDictionary<string, object> header)
         {
-            var response = JsonConvert.DeserializeObject<AuthorCreateRequest>(message);
+            if (header.Keys.Contains("user") && header.Values.Contains("created"))
+            {
+                var response = JsonConvert.DeserializeObject<AuthorCreateRequest>(message);
 
-            try
-            {
-                var authorId = await _authorManager.CreateAuthorAsync(response);
-            }
-            catch (Exception)
-            {
-                Log.Information($"Author with id {response.Id} cannot be created");
-                return false;
+                try
+                {
+                    var authorId = await _authorManager.CreateAuthorAsync(response);
+                }
+                catch (Exception)
+                {
+                    Log.Information($"Author with id {response.Id} cannot be created");
+                    return false;
+                }
             }
 
             return true;
