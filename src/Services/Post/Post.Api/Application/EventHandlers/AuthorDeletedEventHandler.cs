@@ -15,11 +15,13 @@ namespace Post.Api.Application.EventHandlers
     {
         private readonly ISubscriber _subscriber;
         private readonly IPostManager _postManager;
+        private readonly IAuthorManager _authorManager;
 
-        public AuthorDeletedEventHandler(ISubscriber subscriber, IPostManager postManager)
+        public AuthorDeletedEventHandler(ISubscriber subscriber, IPostManager postManager, IAuthorManager authorManager)
         {
             _subscriber = subscriber;
             _postManager = postManager;
+            _authorManager = authorManager;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,7 +36,9 @@ namespace Post.Api.Application.EventHandlers
 
             try
             {
-                await _postManager.DeleteAuthorByIdAsync(response.Id);
+                await _postManager.DeleteAllPostsByAuthorIdAsync(response.Id);
+
+                await _authorManager.DeleteAuthorByIdAsync(response.Id);
             }
             catch (Exception)
             {

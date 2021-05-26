@@ -14,12 +14,12 @@ namespace Post.Api.Application.EventHandlers
     public class AuthorCreatedEventHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
-        private readonly IPostManager _postManager;
+        private readonly IAuthorManager _authorManager;
 
-        public AuthorCreatedEventHandler(ISubscriber subscriber, IPostManager postManager)
+        public AuthorCreatedEventHandler(ISubscriber subscriber, IAuthorManager authorManager)
         {
             _subscriber = subscriber;
-            _postManager = postManager;
+            _authorManager = authorManager;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ namespace Post.Api.Application.EventHandlers
 
             try
             {
-                var authorId = await _postManager.CreateAuthorAsync(response);
+                var authorId = await _authorManager.CreateAuthorAsync(response);
             }
             catch (Exception)
             {

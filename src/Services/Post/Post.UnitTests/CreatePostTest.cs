@@ -14,16 +14,20 @@ namespace Post.UnitTests
     public class CreatePostTest
     {
         private readonly Mock<IPostManager> _postManager;
+        private readonly Mock<IAuthorManager> _authorManager;
         private readonly Mock<IPostRepository> _postRepository;
+        private readonly Mock<IAuthorRepository> _authorRepository;
         private readonly Mock<IPublisher> _publisher;
-        private PostCreateRequest _fakePostCreateRequest;
-        private PostEntity _fakePostEntity;
-        private DateTime CreationTime;
+        private readonly PostCreateRequest _fakePostCreateRequest;
+        private readonly PostEntity _fakePostEntity;
+        private readonly DateTime CreationTime;
 
         public CreatePostTest()
         {
             _postManager = new Mock<IPostManager>();
+            _authorManager = new Mock<IAuthorManager>();
             _postRepository = new Mock<IPostRepository>();
+            _authorRepository = new Mock<IAuthorRepository>();
             _publisher = new Mock<IPublisher>();
             CreationTime = DateTime.UtcNow;
             _fakePostCreateRequest = new PostCreateRequest
@@ -70,9 +74,9 @@ namespace Post.UnitTests
                 Summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque urna quis elit eleifend cursus. Donec euismod magna quam, quis malesuada mi dictum a. Donec euismod felis tincidunt.",
                 ImageUrl = "https://pbs.twimg.com/profile_images/1021763565194235904/ElgtjZDA_400x400.jpg",
                 Status = 0,
-                Body = new PostBody 
+                Body = new PostBody
                 {
-                    CompanyDescription = new Api.Database.Models.CompanyDescription 
+                    CompanyDescription = new Api.Database.Models.CompanyDescription
                     {
                         Ticker = "KOD.L",
                         CompanyName = "Kodal Minerls",
@@ -109,14 +113,14 @@ namespace Post.UnitTests
         public async Task Create_post__throws_exception_when_author_not_exists()
         {
             // Arrange
-            var postManager = new PostManager(_postRepository.Object, _publisher.Object);
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Act
-            _postManager.Setup(x => x.AuthorIsPresentAsync(Guid.NewGuid())).ReturnsAsync(false);
+            //_authorManager.Setup(x => x.GetAuthorByIdAsync(Guid.NewGuid())).ReturnsAsync<AuthorNotFoundException>
             _postRepository.Setup(x => x.InsertPostAsync(_fakePostEntity)).ReturnsAsync(Guid.NewGuid());
 
             // Assert
-            await Assert.ThrowsAsync<AuthorNotFoundException>(() => postManager.CreatePostAsync(_fakePostCreateRequest));
+            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.CreatePostAsync(_fakePostCreateRequest));
         }
     }
 }

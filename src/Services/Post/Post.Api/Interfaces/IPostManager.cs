@@ -47,48 +47,13 @@ namespace Post.Api.Interfaces
         /// </summary>
         /// <param name="postId"></param>
         /// <returns>Void</returns>
-        Task RemovePostByIdAsync(Guid postId);
+        Task DeletePostByIdAsync(Guid postId);
 
         /// <summary>
         /// Remove all posts created by an author
         /// </summary>
         /// <param name="authorId"></param>
         /// <returns>Void</returns>
-        Task RemoveAllPostsByAuthorIdAsync(Guid authorId);
-
-        /// <summary>
-        /// Create a new author with provided information
-        /// </summary>
-        /// <param name="authorToCreate"></param>
-        /// <returns>Id of the created author</returns>
-        Task<Guid> CreateAuthorAsync(AuthorCreateRequest authorToCreate);
-
-        /// <summary>
-        /// Read an author with provided Id
-        /// </summary>
-        /// <param name="authorId"></param>
-        /// <returns>Author response model</returns>
-        Task<AuthorResponse> GetAuthorByIdAsync(Guid authorId);
-
-        /// <summary>
-        /// Update an author information with those provided in the author parameter
-        /// </summary>
-        /// <param name="author"></param>
-        /// <returns>Void</returns>
-        Task UpdateAuthorAsync(AuthorCreateRequest author);
-
-        /// <summary>
-        /// Delete an author and all related posts
-        /// </summary>
-        /// <param name="authorId"></param>
-        /// <returns>Void</returns>
-        Task DeleteAuthorByIdAsync(Guid authorId);
-
-        /// <summary>
-        /// Check if an author is present
-        /// </summary>
-        /// <param name="authorId"></param>
-        /// <returns>Return true if author is present, false otherwise</returns>
-        Task<bool> AuthorIsPresentAsync(Guid authorId);
+        Task DeleteAllPostsByAuthorIdAsync(Guid authorId);
     }
 }

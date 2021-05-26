@@ -35,10 +35,5 @@ namespace Post.Api.Interfaces
         Task<Guid> DeletePostAsync(Guid postId);
 
         Task DeleteAllPostsByAuthorIdAsync(Guid authorId);
-
-        Task InsertAuthorAsync(AuthorEntity author);
-        Task<AuthorEntity> ReadAuthorAsync(Guid authorId);
-        Task UpdateAuthorAsync(AuthorEntity author);
-        Task DeleteAuthorAsync(Guid authorId);
     }
 }

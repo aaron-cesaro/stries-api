@@ -12,11 +12,11 @@ namespace Post.Api.Repositories
 {
     public class PostRepository : IPostRepository
     {
-        private readonly PostContext _postContext;
+        private readonly PostContext _dbContext;
 
-        public PostRepository(PostContext postContext)
+        public PostRepository(PostContext dbContext)
         {
-            _postContext = postContext ?? throw new ArgumentNullException(nameof(postContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public async Task<Guid> InsertPostAsync(PostEntity post)
@@ -27,8 +27,8 @@ namespace Post.Api.Repositories
             {
                 post.PostId = postId;
 
-                _postContext.Posts.Add(post);
-                await _postContext.SaveChangesAsync();
+                _dbContext.Posts.Add(post);
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -45,7 +45,7 @@ namespace Post.Api.Repositories
 
             try
             {
-                post = await _postContext.Posts
+                post = await _dbContext.Posts
                  .FirstOrDefaultAsync(p => p.PostId == postId);
             }
             catch (Exception ex)
@@ -61,9 +61,9 @@ namespace Post.Api.Repositories
         {
             try
             {
-                _postContext.Posts.Update(post);
+                _dbContext.Posts.Update(post);
 
-                await _postContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -78,13 +78,13 @@ namespace Post.Api.Repositories
 
             try
             {
-                var postToDelete = await _postContext.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
+                var postToDelete = await _dbContext.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
 
                 authorId = postToDelete.AuthorId;
 
-                _postContext.Posts.Remove(postToDelete);
+                _dbContext.Posts.Remove(postToDelete);
 
-                await _postContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -99,13 +99,13 @@ namespace Post.Api.Repositories
         {
             try
             {
-                var postsToDelete = await _postContext.Posts
+                var postsToDelete = await _dbContext.Posts
                     .Where(p => p.AuthorId == authorId)
                     .ToListAsync();
 
-                _postContext.RemoveRange(postsToDelete);
+                _dbContext.RemoveRange(postsToDelete);
 
-                await _postContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -118,8 +118,8 @@ namespace Post.Api.Repositories
         {
             try
             {
-                _postContext.Authors.Add(author);
-                await _postContext.SaveChangesAsync();
+                _dbContext.Authors.Add(author);
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -134,7 +134,7 @@ namespace Post.Api.Repositories
 
             try
             {
-                author = await _postContext.Authors
+                author = await _dbContext.Authors
                  .FirstOrDefaultAsync(a => a.AuthorId == authorId);
             }
             catch (Exception ex)
@@ -150,9 +150,9 @@ namespace Post.Api.Repositories
         {
             try
             {
-                _postContext.Authors.Update(author);
+                _dbContext.Authors.Update(author);
 
-                await _postContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -165,12 +165,12 @@ namespace Post.Api.Repositories
         {
             try
             {
-                var authorToDelete = await _postContext.Authors
+                var authorToDelete = await _dbContext.Authors
                     .FirstOrDefaultAsync(a => a.AuthorId == authorId);
 
-                _postContext.Authors.Remove(authorToDelete);
+                _dbContext.Authors.Remove(authorToDelete);
 
-                await _postContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
