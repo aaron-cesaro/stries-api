@@ -25,7 +25,7 @@ namespace Post.Api.Managers
             {
                 var authorCheck = await _authorRepository.ReadAuthorAsync(authorToCreate.Id);
 
-                if (authorCheck == null)
+                if (authorCheck != null)
                 {
                     throw new AuthorNotProcessedException();
                 }
