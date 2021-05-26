@@ -81,7 +81,6 @@ namespace Post.Api.Controllers
                 return ex switch
                 {
                     PostNotFoundException => NotFound(),
-                    AuthorNotFoundException => NotFound(),
 
                     _ => StatusCode(500)
                 };

@@ -9,30 +9,40 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Post.UnitTests
+namespace Post.Managers.UnitTests
 {
-    public class CreatePostTest
+    public class GetPostByIdAsyncTest
     {
-        private readonly Mock<IPostManager> _postManager;
         private readonly Mock<IAuthorManager> _authorManager;
         private readonly Mock<IPostRepository> _postRepository;
-        private readonly Mock<IAuthorRepository> _authorRepository;
         private readonly Mock<IPublisher> _publisher;
-        private readonly PostCreateRequest _fakePostCreateRequest;
+        private readonly PostReponse _fakePostResponse;
         private readonly PostEntity _fakePostEntity;
-        private readonly DateTime CreationTime;
+        private readonly AuthorResponse _fakeAuthorResponse;
+        private readonly DateTime _creationTime;
+        private readonly Guid _fakePostId;
 
-        public CreatePostTest()
+        public GetPostByIdAsyncTest()
         {
-            _postManager = new Mock<IPostManager>();
             _authorManager = new Mock<IAuthorManager>();
             _postRepository = new Mock<IPostRepository>();
-            _authorRepository = new Mock<IAuthorRepository>();
             _publisher = new Mock<IPublisher>();
-            CreationTime = DateTime.UtcNow;
-            _fakePostCreateRequest = new PostCreateRequest
+            _creationTime = DateTime.UtcNow;
+            _fakePostId = Guid.NewGuid();
+            _fakeAuthorResponse = new AuthorResponse
             {
-                AuthorId = Guid.NewGuid(),
+                FirstName = "Aaron",
+                LastName = "Cesaro",
+                NickName = "nan01",
+                EmailAddress = "fakeAuthor@mail.com",
+                Biography = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque urna quis elit eleifend cursus. Donec euismod magna quam, quis malesuada mi dictum a",
+                CreatedAt = _creationTime,
+                UpdatedAt = _creationTime
+            };
+            _fakePostResponse = new PostReponse
+            {
+                Id = _fakePostId,
+                Author = _fakeAuthorResponse,
                 Title = "Fake Analisys",
                 Summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque urna quis elit eleifend cursus. Donec euismod magna quam, quis malesuada mi dictum a. Donec euismod felis tincidunt.",
                 ImageUrl = "https://pbs.twimg.com/profile_images/1021763565194235904/ElgtjZDA_400x400.jpg",
@@ -69,7 +79,7 @@ namespace Post.UnitTests
             };
             _fakePostEntity = new PostEntity
             {
-                AuthorId = Guid.NewGuid(),
+                PostId = _fakePostId,
                 Title = "Fake Analisys",
                 Summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque urna quis elit eleifend cursus. Donec euismod magna quam, quis malesuada mi dictum a. Donec euismod felis tincidunt.",
                 ImageUrl = "https://pbs.twimg.com/profile_images/1021763565194235904/ElgtjZDA_400x400.jpg",
@@ -104,23 +114,69 @@ namespace Post.UnitTests
                     CompanyFinancials = new Api.Database.Models.CompanyFinancials(),
                     CompanyOther = new Api.Database.Models.CompanyOther(),
                 },
-                CreatedAt = CreationTime,
-                UpdatedAt = CreationTime
+                CreatedAt = _creationTime,
+                UpdatedAt = _creationTime
             };
         }
 
         [Fact]
-        public async Task Create_post__throws_exception_when_author_not_exists()
+        public async Task Get_post_throws_exception_when_author_not_exists()
         {
             // Arrange
-            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
+            var fakePostId = Guid.NewGuid();
+            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakePostEntity);
+            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new AuthorNotFoundException());
 
             // Act
-            //_authorManager.Setup(x => x.GetAuthorByIdAsync(Guid.NewGuid())).ReturnsAsync<AuthorNotFoundException>
-            _postRepository.Setup(x => x.InsertPostAsync(_fakePostEntity)).ReturnsAsync(Guid.NewGuid());
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Assert
-            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.CreatePostAsync(_fakePostCreateRequest));
+            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.GetPostByIdAsync(fakePostId));
+        }
+
+        [Fact]
+        public async Task Get_post_throws_exception_when_post_not_get()
+        {
+            // Arrange
+            var fakePostId = Guid.NewGuid();
+            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakePostEntity);
+            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
+
+            // Act
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
+
+            // Assert
+            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.GetPostByIdAsync(fakePostId));
+        }
+
+        [Fact]
+        public async Task Get_post_throws_exception_when_post_is_not_found()
+        {
+            // Arrange
+            var fakePostId = Guid.NewGuid();
+            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync((PostEntity)null);
+            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakeAuthorResponse);
+
+            // Act
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
+
+            // Assert
+            await Assert.ThrowsAsync<PostNotFoundException>(() => postManager.GetPostByIdAsync(fakePostId));
+        }
+
+        [Fact]
+        public async Task Create_post_is_valid()
+        {
+            // Arrange
+            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakePostEntity);
+            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakeAuthorResponse);
+
+            // Act
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
+            var processedPost = await postManager.GetPostByIdAsync(_fakePostId);
+
+            // Assert
+            Assert.Equal(_fakePostResponse.Id.ToString(), processedPost.Id.ToString());
         }
     }
 }

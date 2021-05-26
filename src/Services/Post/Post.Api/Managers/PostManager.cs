@@ -32,8 +32,6 @@ namespace Post.Api.Managers
 
             var creationDate = DateTime.UtcNow;
 
-            var postId = Guid.Empty;
-
             var post = new PostEntity
             {
                 AuthorId = postToCreate.AuthorId,
@@ -57,13 +55,13 @@ namespace Post.Api.Managers
 
             try
             {
-                var autorCheckId = await _authorManager.GetAuthorByIdAsync(postToCreate.AuthorId);
+                var autorCheck = await _authorManager.GetAuthorByIdAsync(postToCreate.AuthorId);
 
-                postId = await _postRepository.InsertPostAsync(post);
+                var postId = await _postRepository.InsertPostAsync(post);
 
                 var postCreatedEvent = new PostCreatedEvent
                 {
-                    AuthorId = autorCheckId.Id,
+                    AuthorId = autorCheck.Id,
                     Title = postToCreate.Title,
                     ImageUrl = postToCreate.ImageUrl,
                     CreatedAt = creationDate
@@ -79,15 +77,15 @@ namespace Post.Api.Managers
                 return postId;
 
             }
-            catch (AuthorNotFoundException)
+            catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with Author id {postToCreate.AuthorId} cannot be created because author was not found");
-                return postId;
+                throw new PostNotProcessedException(ex, $"Post title {postToCreate.Title}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post with Author id {post.AuthorId} cannot be created");
-                throw new PostNotProcessedException(ex, $"Post id {postId}");
+                Log.Error(ex, ex.Message, $"Post with Author id {postToCreate.AuthorId} cannot be created");
+                throw new PostNotProcessedException(ex, $"Post title {postToCreate.Title}");
             }
         }
 
@@ -101,7 +99,6 @@ namespace Post.Api.Managers
 
                 if (postToGet == null)
                 {
-                    Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
@@ -133,6 +130,11 @@ namespace Post.Api.Managers
                 Log.Information($"Post with Id {postId} successfully retrieved");
 
                 return post;
+            }
+            catch (PostNotFoundException ex)
+            {
+                Log.Information($"Post with id {postId} not found");
+                throw new PostNotFoundException(ex, $"Post id {postId}");
             }
             catch (AuthorNotFoundException ex)
             {
