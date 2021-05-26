@@ -34,7 +34,7 @@ namespace Post.Api.Repositories
             {
                 Log.Error(ex, ex.Message, $"Post {post.Title} not inserted");
                 throw new PostDbOperationNotExecutedException(ex, $"Post title {post.Title}");
-            }   
+            }
         }
 
         public async Task<PostEntity> ReadPostByIdAsync(Guid postId)

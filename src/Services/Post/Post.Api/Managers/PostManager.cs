@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Post.Api.Application.EventHandlers.Events;
 using Post.Api.Application.Events;
 using Post.Api.Application.Models;
 using Post.Api.Database.Entities;
@@ -58,19 +57,6 @@ namespace Post.Api.Managers
                 var autorCheck = await _authorManager.GetAuthorByIdAsync(postToCreate.AuthorId);
 
                 var postId = await _postRepository.InsertPostAsync(post);
-
-                var postCreatedEvent = new PostCreatedEvent
-                {
-                    AuthorId = autorCheck.Id,
-                    Title = postToCreate.Title,
-                    ImageUrl = postToCreate.ImageUrl,
-                    CreatedAt = creationDate
-                };
-
-                // Send post creation event through message broker
-                _publisher.Publish(
-                    JsonConvert.SerializeObject(postCreatedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("PostCreated", "PostCreated"));
 
                 Log.Information($"Post with Id {postId} and Author id {post.AuthorId} successfully created");
 
@@ -233,17 +219,15 @@ namespace Post.Api.Managers
                 var postPublishedEvent = new PostPublishedEvent
                 {
                     PostId = postId,
+                    AuthorId = postToPublish.AuthorId,
                     Title = postToPublish.Title,
                     Summary = postToPublish.Summary,
                     ImageUrl = postToPublish.ImageUrl,
-                    AuthorId = postToPublish.AuthorId,
                     PublishedAt = postToPublish.PublishedAt
                 };
 
                 // Send post published event through message broker
-                _publisher.Publish(
-                    JsonConvert.SerializeObject(postPublishedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("PostPublished", "PostPublished"));
+                _publisher.Publish(JsonConvert.SerializeObject(postPublishedEvent), MessageBrokerRoutingKeys.POST_PUBLISHED, null);
 
                 Log.Information($"Post with Id {postId} successfully published at {publishedDate}");
             }
@@ -294,17 +278,15 @@ namespace Post.Api.Managers
                 var postArchivedEvent = new PostArchivedEvent
                 {
                     PostId = postId,
+                    AuthorId = author.Id,
                     Title = postToArchive.Title,
                     Summary = postToArchive.Summary,
                     ImageUrl = postToArchive.ImageUrl,
-                    AuthorId = author.Id,
                     ArchivedAt = postToArchive.ArchivedAt
                 };
 
                 // Send post published event through message broker
-                _publisher.Publish(
-                    JsonConvert.SerializeObject(postArchivedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("PostArchived", "PostArchived"));
+                _publisher.Publish(JsonConvert.SerializeObject(postArchivedEvent), MessageBrokerRoutingKeys.POST_ARCHIVED, null);
 
                 Log.Information($"Post with Id {postId} successfully archived at {archivedDate}");
             }
@@ -344,9 +326,7 @@ namespace Post.Api.Managers
                 };
 
                 // Send post deletion event through message broker
-                _publisher.Publish(
-                    JsonConvert.SerializeObject(postDeletedEvent),
-                    MessageBrokerHelpers.SetMessageRoute("PostDeleted", "PostDeleted"));
+                _publisher.Publish(JsonConvert.SerializeObject(postDeletedEvent), MessageBrokerRoutingKeys.POST_DELETED, null);
 
                 Log.Information($"Post with Id {postId} by author {authorId} successfully deleted");
             }

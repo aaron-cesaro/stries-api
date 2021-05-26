@@ -16,11 +16,11 @@ services:
       context: .
       dockerfile: ApiGateways/Web/ApiGateway.Web/Dockerfile
     depends_on:
-      - post
-      - user
+      - postapi
+      - userapi
 
-  post:
-    image: ${DOCKER_REGISTRY-}post
+  postapi:
+    image: ${DOCKER_REGISTRY-}postapi
     build:
       context: .
       dockerfile: Services/Post/Post.Api/Dockerfile
@@ -28,8 +28,8 @@ services:
       - rabbitmq
       - postgres
 
-  user:
-    image: ${DOCKER_REGISTRY-}user
+  userapi:
+    image: ${DOCKER_REGISTRY-}userapi
     build:
       context: .
       dockerfile: Services/User/User.Api/Dockerfile

@@ -14,7 +14,6 @@ using Post.Api.Repositories;
 using RabbitMQ.Client;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Post.Api
@@ -91,12 +90,9 @@ namespace Post.Api
         // Message Broker configuration
         public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration)
         {
-            // Add routing keys based on headers for message broker
-            var routingHeaders = new Dictionary<string, object>
-            {
-                { "UserCreated", "UserCreated" },
-                { "UserDeleted", "UserDeleted" }
-            };
+            // Add routing keys for message broker
+            var userCreatedRoutingKey = "user.created";
+            var userDeletedRoutingKey = "user.deleted";
 
             // Get message broker settings from configuration
             var messageBrokerSettings = Configuration.GetSection("MessageBrokerSettings");
@@ -104,15 +100,24 @@ namespace Post.Api
             // Add connection provider with specified container url
             services.AddSingleton<IConnectionProvider>(new ConnectionProvider(messageBrokerSettings.GetValue<string>("Url")));
 
+            // Add exchange to publish events
             services.AddSingleton<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
-                    "stries_default_exchange",
-                    ExchangeType.Headers));
+                    "stries_post_exchange",
+                    ExchangeType.Direct));
 
+            // Add user Created subscription
             services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
-            "stries_default_exchange",
-            "stries_default_queue",
-            routingHeaders,
-            ExchangeType.Headers));
+            "stries_user_exchange",
+            "stries_user_queue",
+            userCreatedRoutingKey,
+            ExchangeType.Direct));
+
+            // Add user Created subscription
+            services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
+            "stries_user_exchange",
+            "stries_user_queue",
+            userDeletedRoutingKey,
+            ExchangeType.Direct));
 
             return services;
         }

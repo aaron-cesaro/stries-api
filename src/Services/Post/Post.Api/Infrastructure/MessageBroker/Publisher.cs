@@ -24,7 +24,7 @@ namespace Post.Api.Infrastructure.MessageBroker
             _model.ExchangeDeclare(_exchange, exchangeType, arguments: ttl);
         }
 
-        public void Publish(string message, IDictionary<string, object> messageAttributes, string timeToLive = "30000")
+        public void Publish(string message, string routingKey, IDictionary<string, object> messageAttributes, string timeToLive = "30000")
         {
             var body = Encoding.UTF8.GetBytes(message);
             var properties = _model.CreateBasicProperties();
@@ -32,7 +32,7 @@ namespace Post.Api.Infrastructure.MessageBroker
             properties.Headers = messageAttributes;
             properties.Expiration = timeToLive;
 
-            _model.BasicPublish(_exchange, string.Empty, properties, body);
+            _model.BasicPublish(_exchange, routingKey, properties, body);
         }
 
         public void Dispose()

@@ -19,7 +19,7 @@ namespace Post.Api.Infrastructure.MessageBroker
             IConnectionProvider connectionProvider,
             string exchange,
             string queue,
-            Dictionary<string, object> routingHeaders,
+            string routingKey,
             string exchangeType,
             int timeToLive = 30000,
             ushort prefetchSize = 10)
@@ -32,14 +32,13 @@ namespace Post.Api.Infrastructure.MessageBroker
             {
                 {"x-message-ttl", timeToLive }
             };
-            // Create Queue and Exchenge
             _model.ExchangeDeclare(_exchange, exchangeType, arguments: ttl);
             _model.QueueDeclare(_queue,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
-            _model.QueueBind(_queue, _exchange, string.Empty, routingHeaders);
+            _model.QueueBind(_queue, _exchange, routingKey);
             _model.BasicQos(0, prefetchSize, false);
         }
 

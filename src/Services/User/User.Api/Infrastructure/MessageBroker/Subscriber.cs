@@ -19,7 +19,7 @@ namespace User.Api.Infrastructure.MessageBroker
             IConnectionProvider connectionProvider,
             string exchange,
             string queue,
-            Dictionary<string, object> routingHeaders,
+            string routingKey,
             string exchangeType,
             int timeToLive = 30000,
             ushort prefetchSize = 10)
@@ -38,7 +38,7 @@ namespace User.Api.Infrastructure.MessageBroker
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
-            _model.QueueBind(_queue, _exchange, string.Empty, routingHeaders);
+            _model.QueueBind(_queue, _exchange, routingKey);
             _model.BasicQos(0, prefetchSize, false);
         }
 

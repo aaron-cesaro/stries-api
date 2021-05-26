@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using User.Api.Application.EventHandlers;
 using User.Api.Database.Contextes;
@@ -84,11 +83,7 @@ namespace User.Api
         // Message Broker configuration
         public static IServiceCollection ConfigureMessageBroker(this IServiceCollection services, IConfiguration Configuration)
         {
-            // Add routing keys based on headers for message broker
-            var routingHeaders = new Dictionary<string, object>
-            {
-                { "", "" }
-            };
+            // Add routing keys for message broker
 
             // Get message broker settings from configuration
             var messageBrokerSettings = Configuration.GetSection("MessageBrokerSettings");
@@ -96,15 +91,17 @@ namespace User.Api
             // Add connection provider with specified container url
             services.AddSingleton<IConnectionProvider>(new ConnectionProvider(messageBrokerSettings.GetValue<string>("Url")));
 
+            // Add exchange to publish events
             services.AddSingleton<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
-                    "stries_default_exchange",
-                    ExchangeType.Headers));
+                    "stries_user_exchange",
+                    ExchangeType.Direct));
 
+            // Add user Created subscription
             services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
             "stries_default_exchange",
             "stries_default_queue",
-            routingHeaders,
-            ExchangeType.Headers));
+            "default",
+            ExchangeType.Direct));
 
             return services;
         }

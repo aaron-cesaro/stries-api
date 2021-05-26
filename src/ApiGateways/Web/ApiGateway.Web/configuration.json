@@ -16,7 +16,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "post",
+          "Host": "postapi",
           "Port": 80
         }
       ]
@@ -37,7 +37,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "user",
+          "Host": "userapi",
           "Port": 80
         }
       ]
@@ -50,7 +50,7 @@
         {
           "Name": "Post Service API",
           "Version": "v1",
-          "Url": "http://post:80/swagger/v1/swagger.json"
+          "Url": "http://postapi:80/swagger/v1/swagger.json"
         }
       ]
     },
@@ -60,7 +60,7 @@
         {
           "Name": "User Service API",
           "Version": "v1",
-          "Url": "http://user:80/swagger/v1/swagger.json"
+          "Url": "http://userapi:80/swagger/v1/swagger.json"
         }
       ]
     }
