@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Post.Api.Application.EventHandlers
 {
-    public class AuthorDeletedEventHandler : IHostedService
+    public class UserDeletedEventHandler : IHostedService
     {
         private readonly ISubscriber _subscriber;
         private readonly IPostManager _postManager;
         private readonly IAuthorManager _authorManager;
 
-        public AuthorDeletedEventHandler(ISubscriber subscriber, IPostManager postManager, IAuthorManager authorManager)
+        public UserDeletedEventHandler(ISubscriber subscriber, IPostManager postManager, IAuthorManager authorManager)
         {
             _subscriber = subscriber;
             _postManager = postManager;
@@ -34,7 +34,7 @@ namespace Post.Api.Application.EventHandlers
         {
             if (header.Keys.Contains("user") && header.Values.Contains("deleted"))
             {
-                var response = JsonConvert.DeserializeObject<AuthorDeletedEvent>(message);
+                var response = JsonConvert.DeserializeObject<UserDeletedEvent>(message);
 
                 try
                 {

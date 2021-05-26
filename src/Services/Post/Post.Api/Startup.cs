@@ -92,6 +92,7 @@ namespace Post.Api
         {
             // Add routing keys for message broker
             var userCreatedRoutingKey = "user.created";
+            var userUpdatedRoutingKey = "user.updated";
             var userDeletedRoutingKey = "user.deleted";
 
             // Get message broker settings from configuration
@@ -110,6 +111,13 @@ namespace Post.Api
             "stries_user_exchange",
             "stries_user_queue",
             userCreatedRoutingKey,
+            ExchangeType.Direct));
+
+            // Add user Updated subscription
+            services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
+            "stries_user_exchange",
+            "stries_user_queue",
+            userUpdatedRoutingKey,
             ExchangeType.Direct));
 
             // Add user Created subscription
@@ -137,8 +145,8 @@ namespace Post.Api
         // Add Hosted Services for background tasks
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
-            services.AddHostedService<AuthorCreatedEventHandler>();
-            services.AddHostedService<AuthorDeletedEventHandler>();
+            services.AddHostedService<UserCreatedEventHandler>();
+            services.AddHostedService<UserDeletedEventHandler>();
 
             return services;
         }
