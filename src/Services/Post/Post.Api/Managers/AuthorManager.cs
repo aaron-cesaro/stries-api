@@ -21,37 +21,40 @@ namespace Post.Api.Managers
         {
             Log.Information($"Creating Author Nickname {authorToCreate.NickName}");
 
-            var authorCheck = await _authorRepository.ReadAuthorAsync(authorToCreate.Id);
-
-            if (authorCheck == null)
-            {
-                Log.Error($"Author id {authorToCreate.Id} cannot be created because author is already present");
-                throw new AuthorNotProcessedException($"Author id {authorToCreate.Id}");
-            }
-
-            var creationDate = DateTime.UtcNow;
-
-            var author = new AuthorEntity
-            {
-                AuthorId = authorToCreate.Id,
-                FirstName = authorToCreate.FirstName,
-                LastName = authorToCreate.LastName,
-                NickName = authorToCreate.NickName,
-                EmailAddress = authorToCreate.EmailAddress,
-                Biography = authorToCreate.Biography,
-                PostPublished = 0,
-                CreatedAt = creationDate,
-                UpdatedAt = creationDate
-            };
-
             try
             {
+                var authorCheck = await _authorRepository.ReadAuthorAsync(authorToCreate.Id);
+
+                if (authorCheck == null)
+                {
+                    throw new AuthorNotProcessedException();
+                }
+
+                var creationDate = DateTime.UtcNow;
+
+                var author = new AuthorEntity
+                {
+                    AuthorId = authorToCreate.Id,
+                    FirstName = authorToCreate.FirstName,
+                    LastName = authorToCreate.LastName,
+                    NickName = authorToCreate.NickName,
+                    EmailAddress = authorToCreate.EmailAddress,
+                    Biography = authorToCreate.Biography,
+                    PostPublished = 0,
+                    CreatedAt = creationDate,
+                    UpdatedAt = creationDate
+                };
 
                 await _authorRepository.InsertAuthorAsync(author);
 
                 Log.Information($"Author id {author.AuthorId} successfully created");
 
                 return author.AuthorId;
+            }
+            catch (AuthorNotProcessedException ex)
+            {
+                Log.Error($"Author id {authorToCreate.Id} cannot be created because author is already present");
+                throw new AuthorNotProcessedException(ex, $"Author id {authorToCreate.Id}");
             }
             catch (Exception ex)
             {
@@ -70,8 +73,7 @@ namespace Post.Api.Managers
 
                 if (authorToGet == null)
                 {
-                    Log.Information($"Author with id {authorId} not found");
-                    throw new AuthorNotFoundException($"Author id {authorId}");
+                    throw new AuthorNotFoundException();
                 }
 
                 var author = new AuthorResponse
@@ -90,6 +92,11 @@ namespace Post.Api.Managers
 
                 return author;
             }
+            catch (AuthorNotFoundException ex)
+            {
+                Log.Information($"Author with id {authorId} not found");
+                throw new AuthorNotFoundException(ex, $"Author id {authorId}");
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Author with id {authorId} cannot be retrieved");
@@ -107,8 +114,7 @@ namespace Post.Api.Managers
 
                 if (authorToUpdate == null)
                 {
-                    Log.Information($"Author with id {author.Id} not found");
-                    throw new AuthorNotFoundException($"Author id {author.Id}");
+                    throw new AuthorNotFoundException();
                 }
 
                 authorToUpdate.UpdatedAt = DateTime.UtcNow;
@@ -116,6 +122,11 @@ namespace Post.Api.Managers
                 await _authorRepository.UpdateAuthorAsync(authorToUpdate);
 
                 Log.Information($"Author with Id {author.Id} successfully saved");
+            }
+            catch (AuthorNotFoundException ex)
+            {
+                Log.Information($"Author with id {author.Id} not found");
+                throw new AuthorNotFoundException(ex, $"Author id {author.Id}");
             }
             catch (Exception ex)
             {
@@ -134,15 +145,18 @@ namespace Post.Api.Managers
 
                 if (authorToDelete == null)
                 {
-                    Log.Information($"Author with id {authorId} not found");
-                    throw new AuthorNotFoundException($"Author id {authorId}");
-
+                    throw new AuthorNotFoundException();
                 }
 
                 await _authorRepository.DeleteAuthorAsync(authorId);
 
                 Log.Information($"Author with Id {authorId} successfully deleted");
 
+            }
+            catch (AuthorNotFoundException ex)
+            {
+                Log.Information($"Author with id {authorId} not found");
+                throw new AuthorNotFoundException(ex, $"Author id {authorId}");
             }
             catch (Exception ex)
             {

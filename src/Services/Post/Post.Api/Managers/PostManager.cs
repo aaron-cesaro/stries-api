@@ -85,7 +85,7 @@ namespace Post.Api.Managers
 
                 if (postToGet == null)
                 {
-                    throw new PostNotFoundException($"Post id {postId}");
+                    throw new PostNotFoundException();
                 }
 
                 var postAuthor = await _authorManager.GetAuthorByIdAsync(postToGet.AuthorId);
@@ -144,12 +144,12 @@ namespace Post.Api.Managers
 
                 if (postToSave == null)
                 {
-                    throw new PostNotFoundException($"Post id {postId}");
+                    throw new PostNotFoundException();
                 }
 
                 if (postToSave.Status == PostStatus.published)
                 {
-                    throw new PostAlreadyPublishedException($"Post id {postId}");
+                    throw new PostAlreadyPublishedException();
                 }
 
                 await _authorManager.GetAuthorByIdAsync(postToSave.AuthorId);
@@ -201,12 +201,12 @@ namespace Post.Api.Managers
 
                 if (postToPublish == null)
                 {
-                    throw new PostNotFoundException($"Post id {postId}");
+                    throw new PostNotFoundException();
                 }
 
                 if (postToPublish.Status == PostStatus.published)
                 {
-                    throw new PostAlreadyPublishedException($"Post id {postToPublish.PostId}");
+                    throw new PostAlreadyPublishedException();
                 }
 
                 await _authorManager.GetAuthorByIdAsync(postToPublish.AuthorId);
@@ -269,12 +269,12 @@ namespace Post.Api.Managers
 
                 if (postToArchive == null)
                 {
-                    throw new PostNotFoundException($"Post id {postId}");
+                    throw new PostNotFoundException();
                 }
 
                 if (postToArchive.Status == PostStatus.archived)
                 {
-                    throw new PostAlreadyArchivedException($"Post id {postToArchive.PostId}");
+                    throw new PostAlreadyArchivedException();
                 }
 
                 var author = await _authorManager.GetAuthorByIdAsync(postToArchive.AuthorId);
@@ -336,7 +336,7 @@ namespace Post.Api.Managers
 
                 if (postToDelete == null)
                 {
-                    throw new PostNotFoundException($"Post id {postId}");
+                    throw new PostNotFoundException();
                 }
 
                 var authorId = await _postRepository.DeletePostAsync(postId);
