@@ -20,7 +20,7 @@ namespace User.Api.Controllers
         {
             Log.Information("User Service Health-Check");
 
-            return Ok();
+            return Ok("User Service is running");
         }
     }
 }

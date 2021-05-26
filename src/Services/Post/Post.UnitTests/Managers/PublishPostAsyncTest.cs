@@ -131,26 +131,11 @@ namespace Post.Managers.UnitTests
             var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Assert
-            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.GetPostByIdAsync(fakePostId));
+            await Assert.ThrowsAsync<AuthorNotFoundException>(() => postManager.PublishPostAsync(fakePostId));
         }
 
         [Fact]
-        public async Task Publish_post_throws_exception_when_post_not_get()
-        {
-            // Arrange
-            var fakePostId = Guid.NewGuid();
-            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakePostEntity);
-            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
-
-            // Act
-            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
-
-            // Assert
-            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.GetPostByIdAsync(fakePostId));
-        }
-
-        [Fact]
-        public async Task Publish_post_throws_exception_when_post_is_not_found()
+        public async Task Publish_post_throws_exception_when_post_not_found()
         {
             // Arrange
             var fakePostId = Guid.NewGuid();
@@ -161,22 +146,38 @@ namespace Post.Managers.UnitTests
             var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
 
             // Assert
-            await Assert.ThrowsAsync<PostNotFoundException>(() => postManager.GetPostByIdAsync(fakePostId));
+            await Assert.ThrowsAsync<PostNotFoundException>(() => postManager.PublishPostAsync(fakePostId));
         }
 
         [Fact]
-        public async Task Publish_post_is_valid()
+        public async Task Publish_post_throws_exception_when_post_already_published()
         {
             // Arrange
+            var fakePostId = Guid.NewGuid();
+            _fakePostEntity.Status = PostStatus.published;
             _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakePostEntity);
             _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakeAuthorResponse);
 
             // Act
             var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
-            var processedPost = await postManager.GetPostByIdAsync(_fakePostId);
 
             // Assert
-            Assert.Equal(_fakePostResponse.Id.ToString(), processedPost.Id.ToString());
+            await Assert.ThrowsAsync<PostAlreadyPublishedException>(() => postManager.PublishPostAsync(fakePostId));
+        }
+
+        [Fact]
+        public async Task Publish_post_throws_exception_when_error()
+        {
+            // Arrange
+            var fakePostId = Guid.NewGuid();
+            _postRepository.Setup(x => x.ReadPostByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
+            _authorManager.Setup(x => x.GetAuthorByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_fakeAuthorResponse);
+
+            // Act
+            var postManager = new PostManager(_postRepository.Object, _authorManager.Object, _publisher.Object);
+
+            // Assert
+            await Assert.ThrowsAsync<PostNotProcessedException>(() => postManager.PublishPostAsync(fakePostId));
         }
     }
 }

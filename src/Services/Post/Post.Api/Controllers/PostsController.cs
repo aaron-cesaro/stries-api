@@ -27,7 +27,7 @@ namespace Post.Api.Controllers
         {
             Log.Information("Post Service Health-Check");
 
-            return Ok();
+            return Ok("Post Service is running");
         }
 
         [HttpPost]
@@ -80,7 +80,7 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException => NotFound(),
+                    PostNotFoundException => NotFound($"Post {id} not found"),
 
                     _ => StatusCode(500)
                 };
@@ -108,14 +108,15 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException => NotFound(),
-                    PostAlreadyPublishedException => BadRequest(),
+                    PostNotFoundException => NotFound($"Post {id} not found"),
+                    PostAlreadyPublishedException => BadRequest($"Post {id} already published"),
+                    AuthorNotFoundException => NotFound($"Post {id}, author not found"),
 
                     _ => StatusCode(500)
                 };
             }
 
-            return Ok();
+            return Ok($"Post {id} saved");
         }
 
         [HttpPut("{Id:guid}/{status:int}")]
@@ -145,15 +146,15 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException => NotFound(),
-                    PostAlreadyPublishedException => BadRequest(),
-                    PostAlreadyArchivedException => BadRequest(),
+                    PostNotFoundException => NotFound($"Post {id} not found"),
+                    PostAlreadyArchivedException => BadRequest($"Post {id} already archived"),
+                    AuthorNotFoundException => NotFound($"Post {id}, author not found"),
 
                     _ => StatusCode(500)
                 };
             }
 
-            return Ok();
+            return Ok($"Post {id} published/archived");
         }
 
         [HttpDelete("{id:guid}")]
@@ -176,13 +177,13 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException => NotFound(),
+                    PostNotFoundException => NotFound($"Post {id} not found"),
 
                     _ => StatusCode(500)
                 };
             }
 
-            return Ok();
+            return Ok($"Post {id} deleted");
         }
     }
 }

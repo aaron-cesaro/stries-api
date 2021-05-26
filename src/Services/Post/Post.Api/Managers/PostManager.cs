@@ -193,13 +193,11 @@ namespace Post.Api.Managers
 
                 if (postToPublish == null)
                 {
-                    Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
                 if (postToPublish.Status == PostStatus.published)
                 {
-                    Log.Information($"Post with id {postId} cannot be published because it's already published");
                     throw new PostAlreadyPublishedException($"Post id {postToPublish.PostId}");
                 }
 
@@ -231,10 +229,20 @@ namespace Post.Api.Managers
 
                 Log.Information($"Post with Id {postId} successfully published at {publishedDate}");
             }
+            catch (PostNotFoundException ex)
+            {
+                Log.Information($"Post with id {postId} not found");
+                throw new PostNotFoundException(ex, $"Post id {postId}");
+            }
+            catch (PostAlreadyPublishedException ex)
+            {
+                Log.Information($"Post with id {postId} cannot be published because it's already published");
+                throw new PostAlreadyPublishedException(ex, $"Post id {postId}");
+            }
             catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with id {postId} cannot be published because author was not found");
-                throw new PostNotProcessedException(ex, $"Post id {postId}");
+                throw new AuthorNotFoundException(ex, $"Post id {postId}");
             }
             catch (Exception ex)
             {
@@ -253,13 +261,11 @@ namespace Post.Api.Managers
 
                 if (postToArchive == null)
                 {
-                    Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
                 if (postToArchive.Status == PostStatus.archived)
                 {
-                    Log.Information($"Post with id {postId} cannot be archived because it's already archived");
                     throw new PostAlreadyArchivedException($"Post id {postToArchive.PostId}");
                 }
 
@@ -290,10 +296,20 @@ namespace Post.Api.Managers
 
                 Log.Information($"Post with Id {postId} successfully archived at {archivedDate}");
             }
+            catch (PostNotFoundException ex)
+            {
+                Log.Information($"Post with id {postId} not found");
+                throw new PostNotFoundException(ex, $"Post id {postId}");
+            }
+            catch (PostAlreadyArchivedException ex)
+            {
+                Log.Information($"Post with id {postId} cannot be archived because it's already archived");
+                throw new PostAlreadyArchivedException(ex, $"Post id {postId}");
+            }
             catch (AuthorNotFoundException ex)
             {
                 Log.Error($"Post with id {postId} cannot be archived because author was not found");
-                throw new PostNotProcessedException(ex, $"Post id {postId}");
+                throw new AuthorNotFoundException(ex, $"Post id {postId}");
             }
             catch (Exception ex)
             {
@@ -312,9 +328,7 @@ namespace Post.Api.Managers
 
                 if (postToDelete == null)
                 {
-                    Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
-
                 }
 
                 var authorId = await _postRepository.DeletePostAsync(postId);
@@ -329,6 +343,11 @@ namespace Post.Api.Managers
                 _publisher.Publish(JsonConvert.SerializeObject(postDeletedEvent), MessageBrokerRoutingKeys.POST_DELETED, null);
 
                 Log.Information($"Post with Id {postId} by author {authorId} successfully deleted");
+            }
+            catch (PostNotFoundException ex)
+            {
+                Log.Information($"Post with id {postId} not found");
+                throw new PostNotFoundException(ex, $"Post id {postId}");
             }
             catch (Exception ex)
             {

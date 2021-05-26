@@ -135,7 +135,7 @@ namespace Post.Managers.UnitTests
         }
 
         [Fact]
-        public async Task Get_post_throws_exception_when_post_not_get()
+        public async Task Get_post_throws_exception_when_error()
         {
             // Arrange
             var fakePostId = Guid.NewGuid();
