@@ -144,13 +144,11 @@ namespace Post.Api.Managers
 
                 if (postToSave == null)
                 {
-                    Log.Information($"Post with id {postId} not found");
                     throw new PostNotFoundException($"Post id {postId}");
                 }
 
                 if (postToSave.Status == PostStatus.published)
                 {
-                    Log.Information($"Post with id {postId} cannot be saved because it's already published");
                     throw new PostAlreadyPublishedException($"Post id {postId}");
                 }
 
