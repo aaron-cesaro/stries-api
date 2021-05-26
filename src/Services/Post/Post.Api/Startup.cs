@@ -146,6 +146,7 @@ namespace Post.Api
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
             services.AddHostedService<UserCreatedEventHandler>();
+            services.AddHostedService<UserUpdatedEventHandler>();
             services.AddHostedService<UserDeletedEventHandler>();
 
             return services;
