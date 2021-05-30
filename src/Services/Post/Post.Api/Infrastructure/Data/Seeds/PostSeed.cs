@@ -6,7 +6,7 @@ namespace Post.Api.Infrastructure.Data.Seeds
 {
     public static class PostSeed
     {
-        public static List<PostEntity> PostSeeds = new List<PostEntity>
+        public static readonly List<PostEntity> PostSeeds = new()
         {
             new PostEntity
             {

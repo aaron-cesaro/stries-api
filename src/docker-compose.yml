@@ -18,6 +18,9 @@ services:
     depends_on:
       - postapi
       - userapi
+    command: >
+      "wait -c postapi:80 &&
+      wait -c postapi:80"
 
   postapi:
     image: ${DOCKER_REGISTRY-}postapi

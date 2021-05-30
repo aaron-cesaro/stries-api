@@ -8,12 +8,13 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: stries_2021
-    restart: unless-stopped
+    restart: always
 
   rabbitmq:
     ports:
       - "15672:15672"
       - "5672:5672"
+    restart: always
 
   apigatewayweb:
     environment:
@@ -24,6 +25,9 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - postapi
+      - userapi
 
   postapi:
     environment:
@@ -35,7 +39,6 @@ services:
     depends_on:
      - postgres
      - rabbitmq
-    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "python", "app.py"]
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -50,7 +53,6 @@ services:
     depends_on:
      - postgres
      - rabbitmq
-    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "python", "app.py"]
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

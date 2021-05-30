@@ -122,7 +122,7 @@ namespace Post.Api.Controllers
                 };
             }
 
-            return Ok($"Post {id} saved");
+            return Ok($"Post {id} successfully saved");
         }
 
         [HttpPut("{id:guid}/{status:int}")]
@@ -130,20 +130,24 @@ namespace Post.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> PublishOrArchivePostAsync(Guid id, int status)
+        public async Task<IActionResult> UpdatePostStatusAsync(Guid id, int status)
         {
             if (!ModelState.IsValid || id == Guid.Empty || (status != (int)PostStatus.published && status != (int)PostStatus.archived))
                 return BadRequest();
+
+            var newStatus = string.Empty;
 
             try
             {
                 if (status == (int)PostStatus.published)
                 {
                     await _postManager.PublishPostAsync(id);
+                    newStatus = "published";
                 }
                 else if (status == (int)PostStatus.archived)
                 {
                     await _postManager.ArchivePostAsync(id);
+                    newStatus = "archived";
                 }
             }
             catch (Exception ex)
@@ -152,15 +156,15 @@ namespace Post.Api.Controllers
 
                 return ex switch
                 {
-                    PostNotFoundException => NotFound($"Post {id} not found"),
-                    PostAlreadyArchivedException => BadRequest($"Post {id} already archived"),
-                    AuthorNotFoundException => NotFound($"Post {id}, author not found"),
+                    PostNotFoundException => NotFound($"Post {id} cannot be {newStatus} because post is not found"),
+                    PostAlreadyArchivedException => BadRequest($"Post {id} cannot be {newStatus} because post is already archived"),
+                    AuthorNotFoundException => NotFound($"Post {id} cannot be {newStatus} because post is, author not found"),
 
                     _ => StatusCode(500)
                 };
             }
 
-            return Ok($"Post {id} published/archived");
+            return Ok($"Post {id} successfully {newStatus}");
         }
 
         [HttpDelete("{id:guid}")]
@@ -189,7 +193,7 @@ namespace Post.Api.Controllers
                 };
             }
 
-            return Ok($"Post {id} deleted");
+            return Ok($"Post {id} successfully deleted");
         }
     }
 }
