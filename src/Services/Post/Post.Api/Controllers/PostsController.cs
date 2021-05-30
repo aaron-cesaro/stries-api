@@ -62,7 +62,7 @@ namespace Post.Api.Controllers
             }
         }
 
-        [HttpGet("{Id:guid}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(PostReponse), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -93,7 +93,7 @@ namespace Post.Api.Controllers
             }
         }
 
-        [HttpPut("{Id:guid}")]
+        [HttpPut("{id:guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -125,7 +125,7 @@ namespace Post.Api.Controllers
             return Ok($"Post {id} saved");
         }
 
-        [HttpPut("{Id:guid}/{status:int}")]
+        [HttpPut("{id:guid}/{status:int}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]

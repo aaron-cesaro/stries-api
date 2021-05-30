@@ -97,7 +97,7 @@ namespace Post.Api.Managers
                     Title = postToGet.Title,
                     Summary = postToGet.Summary,
                     ImageUrl = postToGet.ImageUrl,
-                    Status = PostStatus.draft,
+                    Status = postToGet.Status,
                     PostData = new PostData
                     {
                         CompanyDescription = postToGet.Body.CompanyDescription,

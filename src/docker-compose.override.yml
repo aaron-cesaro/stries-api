@@ -35,6 +35,7 @@ services:
     depends_on:
      - postgres
      - rabbitmq
+    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "python", "app.py"]
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -49,6 +50,7 @@ services:
     depends_on:
      - postgres
      - rabbitmq
+    command: ["./wait-for-it.sh", "rabbitmq:5672", "--", "python", "app.py"]
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
