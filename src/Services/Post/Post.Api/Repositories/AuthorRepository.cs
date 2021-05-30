@@ -27,8 +27,8 @@ namespace Post.Api.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Author {author.AuthorId} not inserted");
-                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.AuthorId}");
+                Log.Error(ex, ex.Message, $"Author {author.Id} not inserted");
+                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.Id}");
             }
         }
 
@@ -39,7 +39,7 @@ namespace Post.Api.Repositories
             try
             {
                 author = await _dbContext.Authors
-                 .FirstOrDefaultAsync(a => a.AuthorId == authorId);
+                 .FirstOrDefaultAsync(a => a.Id == authorId);
             }
             catch (Exception ex)
             {
@@ -60,8 +60,8 @@ namespace Post.Api.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Author {author.AuthorId} not updated");
-                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.AuthorId}");
+                Log.Error(ex, ex.Message, $"Author {author.Id} not updated");
+                throw new PostDbOperationNotExecutedException(ex, $"Author id {author.Id}");
             }
         }
 
@@ -70,7 +70,7 @@ namespace Post.Api.Repositories
             try
             {
                 var authorToDelete = await _dbContext.Authors
-                    .FirstOrDefaultAsync(a => a.AuthorId == authorId);
+                    .FirstOrDefaultAsync(a => a.Id == authorId);
 
                 _dbContext.Authors.Remove(authorToDelete);
 

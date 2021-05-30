@@ -79,7 +79,7 @@ namespace Post.Managers.UnitTests
             };
             _fakePostEntity = new PostEntity
             {
-                PostId = _fakePostId,
+                Id = _fakePostId,
                 Title = "Fake Analisys",
                 Summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque urna quis elit eleifend cursus. Donec euismod magna quam, quis malesuada mi dictum a. Donec euismod felis tincidunt.",
                 ImageUrl = "https://pbs.twimg.com/profile_images/1021763565194235904/ElgtjZDA_400x400.jpg",

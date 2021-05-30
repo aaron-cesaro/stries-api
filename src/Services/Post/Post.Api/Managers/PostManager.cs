@@ -92,7 +92,7 @@ namespace Post.Api.Managers
 
                 var post = new PostReponse
                 {
-                    Id = postToGet.PostId,
+                    Id = postToGet.Id,
                     Author = postAuthor,
                     Title = postToGet.Title,
                     Summary = postToGet.Summary,

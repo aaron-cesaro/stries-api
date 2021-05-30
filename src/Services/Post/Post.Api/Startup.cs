@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Post.Api.Application.EventHandlers;
 using Post.Api.Database.Contextes;
+using Post.Api.Infrastructure.Data;
 using Post.Api.Infrastructure.MessageBroker;
 using Post.Api.Interfaces;
 using Post.Api.Managers;
@@ -52,19 +53,22 @@ namespace Post.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PostContext context)
         {
             Log.Information($"Configuring {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}");
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1");
                     c.RoutePrefix = string.Empty;
                 });
+
+                DatabaseInitializer.DatabaseSeed(app);
 
                 Log.Information(
                     $"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} is using {env.EnvironmentName} enviroment");

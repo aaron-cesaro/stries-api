@@ -8,7 +8,7 @@ namespace Post.Api.Database.Entities
     public class AuthorEntity
     {
         [Key]
-        public Guid AuthorId { get; set; }
+        public Guid Id { get; set; }
 
         [StringLength(50, MinimumLength = 3)]
         public string FirstName { get; set; }

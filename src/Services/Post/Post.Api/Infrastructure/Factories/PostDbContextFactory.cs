@@ -7,6 +7,7 @@ using System.IO;
 
 namespace Post.Api.Infrastructure.Factories
 {
+
     public class PostDbContextFactory : IDesignTimeDbContextFactory<PostContext>
     {
         public PostContext CreateDbContext(string[] args)
@@ -19,7 +20,7 @@ namespace Post.Api.Infrastructure.Factories
 
             var optionsBuilder = new DbContextOptionsBuilder<PostContext>();
 
-            optionsBuilder.UseNpgsql(config.GetConnectionString("PostContext"), npgsqlOptionsAction: o => o.MigrationsAssembly("Post"));
+            optionsBuilder.UseNpgsql(config.GetConnectionString("PostContext"), npgsqlOptionsAction: o => o.MigrationsAssembly("Post.Api"));
 
             return new PostContext(optionsBuilder.Options);
         }

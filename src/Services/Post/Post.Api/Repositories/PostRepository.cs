@@ -23,12 +23,12 @@ namespace Post.Api.Repositories
         {
             try
             {
-                post.PostId = Guid.NewGuid();
+                post.Id = Guid.NewGuid();
 
                 _dbContext.Posts.Add(post);
                 await _dbContext.SaveChangesAsync();
 
-                return post.PostId;
+                return post.Id;
             }
             catch (Exception ex)
             {
@@ -42,7 +42,7 @@ namespace Post.Api.Repositories
             try
             {
                 var post = await _dbContext.Posts
-                 .FirstOrDefaultAsync(p => p.PostId == postId);
+                 .FirstOrDefaultAsync(p => p.Id == postId);
 
                 return post;
             }
@@ -63,8 +63,8 @@ namespace Post.Api.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error(ex, ex.Message, $"Post {post.PostId} not updated");
-                throw new PostDbOperationNotExecutedException(ex, $"Post id {post.PostId}");
+                Log.Error(ex, ex.Message, $"Post {post.Id} not updated");
+                throw new PostDbOperationNotExecutedException(ex, $"Post id {post.Id}");
             }
         }
 
@@ -72,7 +72,7 @@ namespace Post.Api.Repositories
         {
             try
             {
-                var postToDelete = await _dbContext.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
+                var postToDelete = await _dbContext.Posts.FirstOrDefaultAsync(p => p.Id == postId);
 
                 var authorId = postToDelete.AuthorId;
 

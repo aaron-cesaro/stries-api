@@ -34,7 +34,7 @@ namespace Post.Api.Managers
 
                 var author = new AuthorEntity
                 {
-                    AuthorId = authorToCreate.Id,
+                    Id = authorToCreate.Id,
                     FirstName = authorToCreate.FirstName,
                     LastName = authorToCreate.LastName,
                     NickName = authorToCreate.NickName,
@@ -47,9 +47,9 @@ namespace Post.Api.Managers
 
                 await _authorRepository.InsertAuthorAsync(author);
 
-                Log.Information($"Author id {author.AuthorId} successfully created");
+                Log.Information($"Author id {author.Id} successfully created");
 
-                return author.AuthorId;
+                return author.Id;
             }
             catch (AuthorNotProcessedException ex)
             {
@@ -78,7 +78,7 @@ namespace Post.Api.Managers
 
                 var author = new AuthorResponse
                 {
-                    Id = authorToGet.AuthorId,
+                    Id = authorToGet.Id,
                     FirstName = authorToGet.FirstName,
                     LastName = authorToGet.LastName,
                     NickName = authorToGet.NickName,

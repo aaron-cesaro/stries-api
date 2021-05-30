@@ -13,7 +13,7 @@ namespace Post.Api.Database.Entities
     public class PostEntity
     {
         [Key]
-        public Guid PostId { get; set; }
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Author Id field must be provided")]
         public Guid AuthorId { get; set; }
