@@ -26,9 +26,5 @@ namespace Post.Api.Application.Models
 
         [StringLength(280, MinimumLength = 22)]
         public string Biography { get; set; }
-
-        [Required(ErrorMessage = "Created At field must be provided")]
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
     }
 }

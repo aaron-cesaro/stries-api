@@ -83,9 +83,7 @@ namespace Post.Api.Managers
                     LastName = authorToGet.LastName,
                     NickName = authorToGet.NickName,
                     EmailAddress = authorToGet.EmailAddress,
-                    Biography = authorToGet.Biography,
-                    CreatedAt = authorToGet.CreatedAt,
-                    UpdatedAt = authorToGet.UpdatedAt
+                    Biography = authorToGet.Biography
                 };
 
                 Log.Information($"Author with Id {authorId} successfully retrieved");

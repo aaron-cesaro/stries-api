@@ -10,23 +10,22 @@ namespace Post.Api.Database.Models
     /// </summary>
     public class CompanyDescription
     {
-        [Required(ErrorMessage = "Ticker field must be provided")]
+        [Required(ErrorMessage = "Symbol field must be provided")]
         [StringLength(6, MinimumLength = 2)]
-        public string Ticker { get; set; }
+        public string Symbol { get; set; }
 
         [Required(ErrorMessage = "Company name field must be provided")]
-        public string CompanyName { get; set; }
+        public string Name { get; set; }
 
         public string Description { get; set; }
-        public string Founded { get; set; }
 
         [Required(ErrorMessage = "Exchange name field must be provided")]
         public string Exchange { get; set; }
-
         public string Sector { get; set; }
         public string Industry { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
         public string Address { get; set; }
-
         [Phone]
         public string PhoneNumber { get; set; }
 
@@ -49,12 +48,14 @@ namespace Post.Api.Database.Models
         public decimal SharesOutstanding { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Float field cannot be negative")]
-        public decimal Float { get; set; }
+        public decimal FloatShares { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "Volume field cannot be negative")]
+        public string Currency { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Last Price field cannot be negative")]
         public decimal LastPrice { get; set; }
-
         public decimal Beta { get; set; }
+        public decimal PriceToBook { get; set; }
         public decimal PeRatio { get; set; }
         public decimal Eps { get; set; }
 

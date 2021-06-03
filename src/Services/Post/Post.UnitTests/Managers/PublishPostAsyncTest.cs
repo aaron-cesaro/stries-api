@@ -49,8 +49,8 @@ namespace Post.Managers.UnitTests
                 {
                     CompanyDescription = new Api.Database.Models.CompanyDescription
                     {
-                        Ticker = "KOD.L",
-                        CompanyName = "Kodal Minerls",
+                        Symbol = "KOD.L",
+                        Name = "Kodal Minerls",
                         Description = "Kodal Minerals PLC (LON:KOD) is a junior explorer with a focus on West Africa, and in particular lithium and gold. The company is run by experienced exploration geologist Bernard Aylward, helped by Robert Wooldridge, who is a partner in UK broking house SP Angel. Steve Zaninovich became project manager in November 2018 to oversee the Bougouni Lithium project feasibility study and development plan. Steve is a Mining and Construction engineer with extensive direct experience in West Africa having been involved in projects in Ghana, Mauritania, Senegal, Burkina Faso, Cote d’Ivoire and Mali. He was previously Business Development manager for Lycopodium in Australia and has been on the board of Gryphon Resources, Indiana Resources and Maximus Resources",
                         Founded = "2009",
                         Exchange = "LON",
@@ -64,7 +64,7 @@ namespace Post.Managers.UnitTests
                         Volume = 2_810_887_631,
                         AverageVolume = 13884.92M,
                         SharesOutstanding = 15_810_000,
-                        Float = 8_123_000,
+                        FloatShares = 8_123_000,
                         LastPrice = 0.22M,
                         Beta = 1.66M,
                         PeRatio = 0,
