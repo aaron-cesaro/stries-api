@@ -59,7 +59,7 @@ namespace Post.Api.Managers
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Author id {authorToCreate.Id} cannot be created");
-                throw new AuthNotProcessedException(ex, $"Author id {authorToCreate.Id}");
+                throw new AuthorNotProcessedException(ex, $"Author id {authorToCreate.Id}");
             }
         }
 
@@ -159,7 +159,7 @@ namespace Post.Api.Managers
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message, $"Author with id {authorId} cannot be deleted");
-                throw new AuthNotProcessedException(ex, $"Author id {authorId}");
+                throw new AuthorNotProcessedException(ex, $"Author id {authorId}");
             }
         }
     }

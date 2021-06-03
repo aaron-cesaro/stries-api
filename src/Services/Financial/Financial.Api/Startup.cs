@@ -1,3 +1,5 @@
+using Financial.Api.Interfaces;
+using Financial.Api.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -78,6 +80,8 @@ namespace Financial.Api
         public static IServiceCollection AddStriesServices(this IServiceCollection services)
         {
             // Application
+            services.AddSingleton<IFinancialManager, FinancialManager>();
+
             return services;
         }
 
