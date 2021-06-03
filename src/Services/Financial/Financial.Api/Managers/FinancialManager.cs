@@ -35,34 +35,32 @@ namespace Financial.Api.Managers
 
                 var companySearchResultList = new List<CompanySearchResult>();
 
-                if (response.IsSuccessful)
+                var searchResponse = JsonDocument.Parse(response.Content);
+
+                var companyCountResult = int.Parse(searchResponse.RootElement.GetProperty("count").ToString());
+
+                if (companyCountResult != 0)
                 {
-                    var searchResponse = JsonDocument.Parse(response.Content);
+                    var CompanySearchResultListJsonObject = searchResponse.RootElement.GetProperty("quotes").EnumerateArray();
 
-                    var companyCountResult = int.Parse(searchResponse.RootElement.GetProperty("count").ToString());
-
-                    if (companyCountResult != 0)
+                    foreach (var company in CompanySearchResultListJsonObject)
                     {
-                        var CompanySearchResultListJsonObject = searchResponse.RootElement.GetProperty("quotes").EnumerateArray();
-
-                        foreach (var company in CompanySearchResultListJsonObject)
-                        {
-                            var searchedCompany = JsonConvert.DeserializeObject<CompanySearchResult>(company.ToString());
-                            companySearchResultList.Add(searchedCompany);
-                        }
+                        var searchedCompany = JsonConvert.DeserializeObject<CompanySearchResult>(company.ToString());
+                        companySearchResultList.Add(searchedCompany);
                     }
-                }
-                else
-                {
-                    throw new ClientUnsuccessfulResponseException(response.ErrorMessage); 
                 }
 
                 return companySearchResultList;
             }
-            catch(Exception ex)
+            catch (ClientUnsuccessfulResponseException ex)
             {
-                Log.Error(ex, ex.Message, $"Api client response error");
+                Log.Error(ex, ex.Message, $"Api client unsuccessful response");
                 throw new ClientUnsuccessfulResponseException(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message, $"Api client error");
+                throw new Exception(ex.Message);
             }
         }
 

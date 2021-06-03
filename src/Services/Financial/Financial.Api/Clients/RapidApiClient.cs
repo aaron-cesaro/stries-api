@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Financial.Api.Infrastructure.Exceptions;
+using RestSharp;
 using System;
 using System.Threading.Tasks;
 
@@ -19,10 +20,14 @@ namespace Financial.Api.Clients
 
                 if (!response.IsSuccessful)
                 {
-                    throw new Exception();
+                    throw new ClientUnsuccessfulResponseException(response.StatusCode.ToString());
                 }
 
                 return response;
+            }
+            catch (ClientUnsuccessfulResponseException ex)
+            {
+                throw new ClientUnsuccessfulResponseException(ex.Message);
             }
             catch (Exception ex)
             {
