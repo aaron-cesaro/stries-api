@@ -41,6 +41,27 @@
           "Port": 80
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/{version}/financial/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 2
+      },
+      "SwaggerKey": "Financial.Api",
+
+      "DownstreamPathTemplate": "/{version}/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "financialapi",
+          "Port": 80
+        }
+      ]
     }
   ],
   "SwaggerEndPoints": [
@@ -61,6 +82,16 @@
           "Name": "User Service API",
           "Version": "v1",
           "Url": "http://userapi:80/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "Financial.Api",
+      "Config": [
+        {
+          "Name": "Financial Service API",
+          "Version": "v1",
+          "Url": "http://financialapi:80/swagger/v1/swagger.json"
         }
       ]
     }

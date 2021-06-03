@@ -18,6 +18,7 @@ services:
     depends_on:
       - postapi
       - userapi
+      - financialapi
 
   postapi:
     image: ${DOCKER_REGISTRY-}postapi
@@ -36,3 +37,11 @@ services:
     depends_on:
       - rabbitmq
       - postgres
+
+  financialapi:
+    image: ${DOCKER_REGISTRY-}financialapi
+    build:
+      context: .
+      dockerfile: Services/Financial/Financial.Api/Dockerfile
+    depends_on:
+      - rabbitmq

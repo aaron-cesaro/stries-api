@@ -42,7 +42,7 @@ namespace User.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "User", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "User.Api", Version = "v1" });
             });
 
             Log.Information($"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services configured");
@@ -57,7 +57,7 @@ namespace User.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "User v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "User.Api v1"));
 
                 Log.Information(
                     $"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} is using {env.EnvironmentName} enviroment");

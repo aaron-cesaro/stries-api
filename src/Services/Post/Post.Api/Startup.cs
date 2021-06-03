@@ -46,7 +46,7 @@ namespace Post.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Post", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Post.Api", Version = "v1" });
             });
 
             Log.Information($"{typeof(Startup).GetTypeInfo().Assembly.GetName().Name} services configured");
@@ -64,7 +64,7 @@ namespace Post.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post v1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Post.Api v1");
                     c.RoutePrefix = string.Empty;
                 });
 
